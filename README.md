@@ -6,6 +6,9 @@ fazendo assim um trajeto inteligente economizando quilometragem, combustível e,
 
 ---
 
+Infos: 
+* Java 22
+
 Aparício Virgínio Do Amaral – 42414535  
 Arthur Maestri Silva de Aguiar – 423192582  
 Danielly Silva Teixeira – 42415112  
