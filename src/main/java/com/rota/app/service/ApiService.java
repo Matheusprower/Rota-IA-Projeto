@@ -1,4 +1,4 @@
-package com.dexio.app.service;
+package com.rota.app.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

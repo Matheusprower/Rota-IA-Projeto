@@ -1,9 +1,9 @@
-package com.dexio.app;
+package com.rota.app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication	
+@SpringBootApplication
 public class AppApplication {
 
 	public static void main(String[] args) {
