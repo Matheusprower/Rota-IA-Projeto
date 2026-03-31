@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login - Rota IA</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 300px;
+            text-align: center;
+        }
+        h2 { color: #2c3e50; margin-bottom: 1.5rem; }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box; /* Garante que o padding não aumente o tamanho */
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover { background-color: #2980b9; }
+        .error { color: #e74c3c; margin-bottom: 1rem; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login - Rota IA</h2>
+        <form th:action="@{/login}" method="post">
+            <div th:if="${param.error}" class="error">
+                Usuário ou senha inválidos.
+            </div>
+            <input type="text" name="username" placeholder="Usuário" required autofocus/>
+            <input type="password" name="password" placeholder="Senha" required/>
+            <button type="submit">Entrar</button>
+        </form>
+    </div>
+</body>
+</html>
