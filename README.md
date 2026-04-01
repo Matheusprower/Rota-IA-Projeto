@@ -1,15 +1,12 @@
-# Rota IA-Projeto
+🚀 Rota IA-Projeto
 
-Sistema inteligente que organiza os pontos de paradas com eficiência e economia,  
-escolhendo a melhor rota para os determinados locais de embarque,  
-fazendo assim um trajeto inteligente economizando quilometragem, combustível e, principalmente, o tempo de duração da viagem.
-
+É um sistema inteligente desenvolvido para otimização logística e gestão de paradas. O objetivo principal é solucionar problemas de roteirização complexos, organizando pontos de embarque de forma estratégica para garantir a máxima eficiência operacional.
 ---
 
 Infos: 
 * Java 22
 
-👥 Equipe
+
 Conheça os desenvolvedores responsáveis por este projeto:
 <table style="width: 100%; text-align: center;">
 <tr>
