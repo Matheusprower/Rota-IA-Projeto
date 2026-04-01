@@ -75,11 +75,5 @@ Conheça os desenvolvedores responsáveis por este projeto:
 
 
 
-
-Aparício Virgínio Do Amaral – 42414535  
-Arthur Maestri Silva de Aguiar – 423192582  
-Danielly Silva Teixeira – 42415112  
-Laura Fagundes Freitas – 42413265  
-Matheus Henrique Santos – 42410613  
-Samuel Fellipe Batista – 42521948  
+  
 
