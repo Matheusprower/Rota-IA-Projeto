@@ -3,8 +3,10 @@
 É um sistema inteligente desenvolvido para otimização logística e gestão de paradas. O objetivo principal é solucionar problemas de roteirização complexos, organizando pontos de embarque de forma estratégica para garantir a máxima eficiência operacional.
 ---
 
-Infos: 
-* Java 22
+Tecnologia Utilizada💻
+
+ -Java 22
+ 
 
 
 Conheça os desenvolvedores responsáveis por este projeto:
@@ -14,21 +16,21 @@ Conheça os desenvolvedores responsáveis por este projeto:
 <a href="https://github.com/Apariicio">
 <img src="https://github.com/Apariicio.png" width="100px;" alt="Foto Aparício"/>
 
-<sub><b>Aparício Virgínio</b></sub>
+<sub><b>Aparício Virgínio 42414535</b></sub>
 </a>
 </td>
 <td align="center">
 <a href="https://github.com/ArthurMaes">
 <img src="https://github.com/ArthurMaes.png" width="100px;" alt="Foto Arthur"/>
 
-<sub><b>Arthur Maestri</b></sub>
+<sub><b>Arthur Maestri 423192582</b></sub>
 </a>
 </td>
 <td align="center">
 <a href="https://github.com/daniellyteixeira872-droid">
 <img src="https://github.com/daniellyteixeira872-droid.png" width="100px;" alt="Foto Danielly"/>
 
-<sub><b>Danielly Silva</b></sub>
+<sub><b>Danielly Silva 42415112</b></sub>
 </a>
 </td>
 </tr>
@@ -37,21 +39,21 @@ Conheça os desenvolvedores responsáveis por este projeto:
 <a href="https://github.com/lauryz0">
 <img src="https://github.com/lauryz0.png" width="100px;" alt="Foto Laura"/>
 
-<sub><b>Laura Freitas</b></sub>
+<sub><b>Laura Freitas 42413265</b></sub>
 </a>
 </td>
 <td align="center">
 <a href="https://github.com/Matheusprower">
 <img src="https://github.com/Matheusprower.png" width="100px;" alt="Foto Matheus"/>
 
-<sub><b>Matheus Henrique</b></sub>
+<sub><b>Matheus Henrique 42410613</b></sub>
 </a>
 </td>
 <td align="center">
 <a href="https://github.com/Samuca02">
 <img src="https://github.com/Samuca02.png" width="100px;" alt="Foto Samuel"/>
 
-<sub><b>Samuel Fellipe</b></sub>
+<sub><b>Samuel Fellipe 42521948</b></sub>
 </a>
 </td>
 </tr>
