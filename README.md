@@ -3,9 +3,13 @@
 É um sistema inteligente desenvolvido para otimização logística e gestão de paradas. O objetivo principal é solucionar problemas de roteirização complexos, organizando pontos de embarque de forma estratégica para garantir a máxima eficiência operacional.
 ---
 
+
+
 Tecnologia Utilizada💻
 
  -Java 22
+
+
  
 
 
