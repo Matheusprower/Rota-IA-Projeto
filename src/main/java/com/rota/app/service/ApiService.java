@@ -1,5 +1,7 @@
 package com.rota.app.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -20,5 +22,11 @@ public class ApiService {
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
+    }
+
+    public String processarMelhorRota(List<String> enderecos) {
+        // Por enquanto, apenas confirmamos o recebimento dos dados
+        System.out.println("Endereços recebidos no Service: " + enderecos);
+        return "Sucesso! O Java recebeu " + enderecos.size() + " endereços para otimização.";
     }
 }

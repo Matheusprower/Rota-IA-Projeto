@@ -1,9 +1,41 @@
-<!DOCTYPE html>
-<html>
+<!--<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-    <title>Minha Página</title>
+    <meta charset="UTF-8">
+    <title>Rota IA - Otimização Inteligente</title>
+    <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
-    <h1>Funcionou!</h1>
+
+    <div id="login-container" class="card">
+        <h2>Login - Rota IA</h2>
+        <input type="text" placeholder="Usuário">
+        <input type="password" placeholder="Senha">
+        <button onclick="mostrarPainel()">Entrar</button>
+    </div>
+
+    <div id="main-panel" class="hidden">
+        <header>
+            <h1>Rota IA: Planejamento de Trajeto</h1>
+        </header>
+
+        <div class="content">
+            <aside id="controls">
+                <h3>Pontos de Embarque</h3>
+                <div id="inputs-container">
+                    <input type="text" class="ponto" placeholder="Endereço de partida">
+                </div>
+                <button id="add-ponto">Adicionar Ponto</button>
+                <button id="btn-otimizar" class="primary">Otimizar Rota</button>
+            </aside>
+
+            <main id="map-container">
+                <div id="map"></div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=SUA_CHAVE_AQUI&callback=initMap" async defer></script>
+    <script src="/js/script.js"></script>
 </body>
 </html>
