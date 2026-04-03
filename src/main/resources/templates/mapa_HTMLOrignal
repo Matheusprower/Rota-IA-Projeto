@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Rota IA - Planejamento</title>
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        #main-container {
+            display: flex;
+            height: 100%;
+        }
+
+        #sidebar {
+            width: 350px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        h2 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-add {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-opt {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .btn-opt:hover {
+            background-color: #219150;
+        }
+
+        #map-container {
+            background-color: #e9e9e9;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main-container">
+        <div id="sidebar">
+            <h2>Rota IA: Trajeto</h2>
+
+            <div id="container-pontos">
+                <div class="form-group">
+                    <label>Ponto 1 (Origem)</label>
+                    <input type="text" class="input-endereco" placeholder="Digite o endereço de partida">
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn-add" onclick="adicionarNovoCampo()">+ Adicionar Parada</button>
+                <button class="btn-opt" onclick="tracarRota()">Otimizar Rota</button>
+            </div>
+        </div>
+
+        <div id="map-container" style="width: 100%; height: 100%; min-height: 500px;"></div>
+    </div>
+    <script>
+        let map;
+        let geocoder;
+        let polylineRota; // Usaremos Polyline em vez do DirectionsRenderer
+        let contadorPontos = 1;
+
+        // Coloque a mesma chave que você usa no script do HTML aqui
+        const API_KEY = "COLOQUE_A_SENHA_API_AQUI";
+        // Para usar a Route Optimization, você PRECISA do ID do projeto do Google Cloud
+        const PROJECT_ID = "rota-ia";
+
+        function initMap() {
+            console.log("Sistema: Iniciando Google Maps...");
+
+            geocoder = new google.maps.Geocoder();
+
+            const centro = { lat: -19.9167, lng: -43.9333 }; // Belo Horizonte
+
+            map = new google.maps.Map(document.getElementById("map-container"), {
+                zoom: 13,
+                center: centro,
+                mapId: "DEMO_MAP_ID"
+            });
+
+            console.log("Sistema: Mapa carregado com sucesso!");
+        }
+
+        function adicionarNovoCampo() {
+            contadorPontos++;
+            const container = document.getElementById("container-pontos");
+            const novoDiv = document.createElement("div");
+            novoDiv.className = "form-group";
+            novoDiv.innerHTML = `
+            <label>Ponto ${contadorPontos}</label>
+            <input type="text" class="input-endereco" placeholder="Digite o próximo endereço"/>
+        `;
+            container.appendChild(novoDiv);
+        }
+
+        // 1. Função auxiliar: Transforma texto em Lat/Lng (Geocoding API)
+        function obterCoordenadas(endereco) {
+            return new Promise((resolve, reject) => {
+                geocoder.geocode({ address: endereco }, (results, status) => {
+                    if (status === "OK") {
+                        resolve({
+                            latitude: results[0].geometry.location.lat(),
+                            longitude: results[0].geometry.location.lng()
+                        });
+                    } else {
+                        reject("Erro ao buscar endereço: " + endereco);
+                    }
+                });
+            });
+        }
+
+        // 2. A função principal usando a Route Optimization API
+        async function tracarRota() {
+            const inputs = document.getElementsByClassName("input-endereco");
+            const enderecosTextos = [];
+
+            for (let input of inputs) {
+                if (input.value.trim() !== "") {
+                    enderecosTextos.push(input.value.trim());
+                }
+            }
+
+            if (enderecosTextos.length < 2) {
+                alert("Digite pelo menos 2 endereços (Origem e Destino)!");
+                return;
+            }
+
+            try {
+                console.log("1. Convertendo endereços em coordenadas...");
+                const coordenadas = [];
+                for (let endereco of enderecosTextos) {
+                    const coord = await obterCoordenadas(endereco);
+                    coordenadas.push(coord);
+                }
+
+                console.log("2. Montando o payload da Route Optimization API...");
+        
+        // Adicionamos o populatePolylines para garantir que a linha do mapa seja devolvida
+        const payload = {
+            populatePolylines: true,
+            model: {
+                vehicles: [{
+                    startLocation: { latLng: coordenadas[0] }
+                }],
+                shipments: coordenadas.slice(1).map(coord => ({
+                    deliveries: [{ arrivalLocation: { latLng: coord } }]
+                }))
+            }
+        };
+
+        console.log("3. Chamando a Route Optimization API...");
+        const url = `https://routeoptimization.googleapis.com/v1/projects/${PROJECT_ID}:optimizeTours?key=${API_KEY}`;
+        
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        // NOVA VERIFICAÇÃO DE ERRO: Vai estourar um alert com a mensagem exata do Google
+        if (!response.ok) {
+            const erroDetails = await response.json();
+            console.error("Erro detalhado da API:", erroDetails);
+            
+            // Pega a mensagem de erro direto do servidor do Google
+            const mensagemGoogle = erroDetails.error ? erroDetails.error.message : "Erro desconhecido";
+            alert("O Google recusou a requisição. Motivo: " + mensagemGoogle);
+            return; // Para a execução aqui
+        }
+
+        const data = await response.json();
+        console.log("4. Rota calculada com sucesso!", data);
+
+        // 5. Desenhando a rota no mapa
+        desenharRotaNoMapa(data);
+
+            } catch (error) {
+                alert(error.message || error);
+                console.error(error);
+            }
+        }
+
+        // Função para pegar a linha codificada devolvida pela API e desenhar na tela
+        function desenharRotaNoMapa(data) {
+            // Limpa a rota anterior, se existir
+            if (polylineRota) {
+                polylineRota.setMap(null);
+            }
+
+            // A Route Optimization retorna várias transições. Precisamos juntar as polilinhas.
+            let caminhoCompleto = [];
+            const rotasDoVeiculo = data.routes[0];
+
+            if (rotasDoVeiculo && rotasDoVeiculo.transitions) {
+                rotasDoVeiculo.transitions.forEach(transition => {
+                    if (transition.routePolyline && transition.routePolyline.points) {
+                        const decodedPath = google.maps.geometry.encoding.decodePath(transition.routePolyline.points);
+                        caminhoCompleto = caminhoCompleto.concat(decodedPath);
+                    }
+                });
+            }
+
+            // Desenha a linha azul no mapa
+            polylineRota = new google.maps.Polyline({
+                path: caminhoCompleto,
+                geodesic: true,
+                strokeColor: "#3498db",
+                strokeOpacity: 0.8,
+                strokeWeight: 5,
+            });
+
+            polylineRota.setMap(map);
+
+            // Centraliza o mapa para mostrar toda a rota
+            const bounds = new google.maps.LatLngBounds();
+            caminhoCompleto.forEach(ponto => bounds.extend(ponto));
+            map.fitBounds(bounds);
+        }
+    </script>
+
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key= COLOQUE_A_SENHA_API &callback=initMap&v=weekly"
+        async defer></script> 
+
+</body>
+
+</html>
