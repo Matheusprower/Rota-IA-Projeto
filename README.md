@@ -10,10 +10,25 @@ Tecnologia Utilizada💻
  -Java 22
 
 
- 
+🛠️ Responsabilidades da Equipe
+Aparício Virgínio: 🖥️ Interface — Focado na experiência do usuário e UI/UX.
+
+Arthur Maestri: 🗄️ Dados — Estruturação e integridade do banco de dados.
+
+Danielly Silva: 📊 Gestão — Controle de prazos e padrões de qualidade.
+
+Laura Freitas: 🎨 Design & Docs — Refino visual e documentação técnica.
+
+Matheus Henrique: ☕ Backend — Lógica central e arquitetura em Java.
+
+Samuel Fellipe: 🧪 QA — Validação de APIs e testes de funcionamento.
+
+
+------------------------------------------------------------------------------------------------------
 
 
 Conheça os desenvolvedores responsáveis por este projeto:
+
 <table style="width: 100%; text-align: center;">
 <tr>
 <td align="center">
@@ -62,47 +77,6 @@ Conheça os desenvolvedores responsáveis por este projeto:
 </td>
 </tr>
 </table>
-
-
-Funçoes de nossos integrantes
-
-Aparício Virgínio
-Desenvolvimento de Interface, Nosso frontend	Responsável pela interface e experiência do usuário (UI/UX).
-
-
-Arthur Maestri
-Modelagem de Dados, Reflete a organização e estrutura do banco de dados.
-
-
-
-
-Danielly Silva
-Gestão e Qualidade,Define quem controla os prazos e o padrão do projeto.
-
-
-
-
-Laura Freitas
-Documentação e Design,  Organiza documentação do projeto e refina o visual.
-
-
-
-Matheus Henrique 
-Desenvolvimento Backend, Foca na construção dos pilares do sistema e lógica em Java.
-
-
-
-Samuel Fellipe
-Testes e Validação,  Quem garante que as funções e APIs funcionam.
-
-
-
-
-
-
-
-
-
 
 
 
