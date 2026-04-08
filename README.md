@@ -1,14 +1,24 @@
 🚀 Rota IA-Projeto
 
 É um sistema inteligente desenvolvido para otimização logística e gestão de paradas. O objetivo principal é solucionar problemas de roteirização complexos, organizando pontos de embarque de forma estratégica para garantir a máxima eficiência operacional.
+
 ---
 
 
 
-Tecnologia Utilizada💻
+Tecnologia Utilizada:
 
- -Java 22
+ -Java 22 ☕
+ 
+ ---------------------------------------------
+ 
+Ferramentas: 
 
+Git & GitHub 🗄️
+
+VS Code 🖥️
+ 
+------------------------------------------------------------------------------------------------------
 
 🛠️ Responsabilidades da Equipe
 
@@ -16,7 +26,7 @@ Aparício Virgínio: 🖥️ Interface — Focado na experiência do usuário e 
 
 Arthur Maestri: 🗄️ Dados — Estruturação e integridade do banco de dados.
 
-Danielly Silva: 📊 Gestão — Controle de prazos e padrões de qualidade.
+Danielly Silva: 📊 Gestão — Controle de prazos e padrões de qualidade do projeto.
 
 Laura Freitas: 🎨 Design & Docs — Refino visual e documentação técnica.
 
