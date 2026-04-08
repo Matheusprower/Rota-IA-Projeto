@@ -11,6 +11,7 @@ Tecnologia Utilizada💻
 
 
 🛠️ Responsabilidades da Equipe
+
 Aparício Virgínio: 🖥️ Interface — Focado na experiência do usuário e UI/UX.
 
 Arthur Maestri: 🗄️ Dados — Estruturação e integridade do banco de dados.
