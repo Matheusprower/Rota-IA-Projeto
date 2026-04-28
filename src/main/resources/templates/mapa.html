@@ -106,75 +106,96 @@
         </div>
 
         <div id="map-container" style="width: 100%; height: 100%; min-height: 500px;"></div>
-</div> <script>
-    let map;
-    let directionsService;
-    let directionsRenderer;
-    let contadorPontos = 1;
+    </div>
+    <script>
+        let map;
+        let directionsService;
+        let directionsRenderer;
+        let contadorPontos = 1;
 
-    function initMap() {
-        console.log("Sistema: Iniciando Google Maps...");
-        
-        directionsService = new google.maps.DirectionsService();
-        directionsRenderer = new google.maps.DirectionsRenderer();
-        
-        const centro = { lat: -19.9167, lng: -43.9333 }; // Belo Horizonte
-        
-        map = new google.maps.Map(document.getElementById("map-container"), {
-            zoom: 13,
-            center: centro,
-            mapId: "DEMO_MAP_ID" // Ajuda a evitar alguns erros de carregamento
-        });
-        
-        directionsRenderer.setMap(map);
-        console.log("Sistema: Mapa carregado com sucesso!");
-    }
+        function initMap() {
+            console.log("Sistema: Iniciando Google Maps...");
 
-    function adicionarNovoCampo() {
-        contadorPontos++;
-        const container = document.getElementById("container-pontos");
-        const novoDiv = document.createElement("div");
-        novoDiv.className = "form-group";
-        novoDiv.innerHTML = `
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+
+            const centro = { lat: -19.9167, lng: -43.9333 }; // Belo Horizonte
+
+            map = new google.maps.Map(document.getElementById("map-container"), {
+                zoom: 13,
+                center: centro,
+                mapId: "DEMO_MAP_ID" // Ajuda a evitar alguns erros de carregamento
+            });
+
+            directionsRenderer.setMap(map);
+            console.log("Sistema: Mapa carregado com sucesso!");
+        }
+
+        function adicionarNovoCampo() {
+            contadorPontos++;
+            const container = document.getElementById("container-pontos");
+            const novoDiv = document.createElement("div");
+            novoDiv.className = "form-group";
+            novoDiv.innerHTML = `
             <label>Ponto ${contadorPontos}</label>
             <input type="text" class="input-endereco" placeholder="Digite o próximo endereço"/>
         `;
-        container.appendChild(novoDiv);
-    }
-
-    function tracarRota() {
-        const inputs = document.getElementsByClassName("input-endereco");
-        const enderecos = [];
-        for (let input of inputs) {
-            if (input.value.trim() !== "") {
-                enderecos.push(input.value.trim());
-            }
+            container.appendChild(novoDiv);
         }
 
-        if (enderecos.length < 2) {
-            alert("Digite pelo menos 2 endereços!");
-            return;
-        }
+        function tracarRota() {
+            const inputs = document.getElementsByClassName("input-endereco");
+            const enderecos = [];
 
-        const request = {
-            origin: enderecos[0],
-            destination: enderecos[enderecos.length - 1],
-            waypoints: enderecos.slice(1, -1).map(loc => ({ location: loc, stopover: true })),
-            optimizeWaypoints: true,
-            travelMode: google.maps.TravelMode.DRIVING
-        };
-
-        directionsService.route(request, (result, status) => {
-            if (status === "OK") {
-                directionsRenderer.setDirections(result);
-            } else {
-                alert("Erro na rota: " + status);
+            for (let input of inputs) {
+                if (input.value.trim() !== "") {
+                    enderecos.push(input.value.trim());
+                }
             }
-        });
-    }
-</script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key= COLOQUE_A_SENHA_API_AQUI &callback=initMap&v=weekly" async defer></script>
+            if (enderecos.length < 2) {
+                alert("Digite pelo menos a origem e uma parada!");
+                return;
+            }
+
+            const origem = enderecos[0];
+            // Pegamos todos os outros endereços para serem otimizados
+            const todasAsParadas = enderecos.slice(1);
+
+            const request = {
+                origin: origem,
+                destination: origem, // Truque: destino igual origem para liberar a IA
+                waypoints: todasAsParadas.map(loc => ({
+                    location: loc,
+                    stopover: true
+                })),
+                optimizeWaypoints: true, // LIGA A INTELIGÊNCIA DE REORDENAÇÃO
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status === "OK") {
+                    // Removemos a última perna (a volta para a origem) para o caminho ficar aberto
+                    // Isso faz com que a rota termine no ponto que a IA achou mais eficiente
+                    if (result.routes[0].legs.length > 1) {
+                        result.routes[0].legs.pop();
+                    }
+
+                    directionsRenderer.setDirections(result);
+
+                    const ordemFinal = result.routes[0].waypoint_order;
+                    console.log("IA: A melhor ordem encontrada foi:", ordemFinal);
+                } else {
+                    alert("Erro na API: " + status);
+                }
+            });
+        }
+    </script>
+
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=COLOQUE A CHAVE API AQUI=initMap&v=weekly"
+        async defer></script>
 
 </body>
+
 </html>
