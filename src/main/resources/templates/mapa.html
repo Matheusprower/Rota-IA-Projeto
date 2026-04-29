@@ -159,41 +159,45 @@
             }
 
             const origem = enderecos[0];
-            // Pegamos todos os outros endereços para serem otimizados
-            const todasAsParadas = enderecos.slice(1);
+            const paradas = enderecos.slice(1);
+
+            // Criamos os waypoints para TODAS as paradas extras
+            const waypoints = paradas.map(loc => ({
+                location: loc,
+                stopover: true
+            }));
 
             const request = {
                 origin: origem,
-                destination: origem, // Truque: destino igual origem para liberar a IA
-                waypoints: todasAsParadas.map(loc => ({
-                    location: loc,
-                    stopover: true
-                })),
-                optimizeWaypoints: true, // LIGA A INTELIGÊNCIA DE REORDENAÇÃO
-                travelMode: google.maps.TravelMode.DRIVING
+                destination: origem, // Mantemos o truque da origem ser o destino
+                waypoints: waypoints,
+                optimizeWaypoints: true, // A CHAVE DA IA
+                travelMode: google.maps.TravelMode.DRIVING,
+                provideRouteAlternatives: false, // Força a focar na melhor única
+                unitSystem: google.maps.UnitSystem.METRIC
             };
 
             directionsService.route(request, (result, status) => {
                 if (status === "OK") {
-                    // Removemos a última perna (a volta para a origem) para o caminho ficar aberto
-                    // Isso faz com que a rota termine no ponto que a IA achou mais eficiente
+                    // Log detalhado para você ver no F12 se ele mudou a ordem
+                    console.log("Ordem original enviada (excluindo a origem):", paradas);
+                    console.log("Nova ordem sugerida pela IA:", result.routes[0].waypoint_order);
+
+                    // Corta a volta para a origem para o trajeto ficar aberto
                     if (result.routes[0].legs.length > 1) {
                         result.routes[0].legs.pop();
                     }
 
                     directionsRenderer.setDirections(result);
-
-                    const ordemFinal = result.routes[0].waypoint_order;
-                    console.log("IA: A melhor ordem encontrada foi:", ordemFinal);
                 } else {
-                    alert("Erro na API: " + status);
+                    alert("Erro na API: " + status + ". Verifique se os endereços existem.");
                 }
             });
         }
     </script>
 
     <script
-        src="https://maps.googleapis.com/maps/api/js?key=COLOQUE A CHAVE API AQUI=initMap&v=weekly"
+        src="https://maps.googleapis.com/maps/api/js?key=COLOQUE A CHAVE TOKEN AQUI&callback=initMap&v=weekly"
         async defer></script>
 
 </body>
