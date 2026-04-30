@@ -1,4 +1,4 @@
-<img width="1313" height="674" alt="image" src="https://github.com/user-attachments/assets/ba660534-885b-425a-98cf-4815967fc919" />🚀 Rota IA-Projeto
+🚀 Rota IA-Projeto
 
 É um sistema inteligente desenvolvido para otimização logística e gestão de paradas. O objetivo principal é solucionar problemas de roteirização complexos, organizando pontos de embarque de forma estratégica para garantir a máxima eficiência operacional.
 
@@ -32,6 +32,9 @@ Laura Freitas: 🎨 Design & Docs — Refino visual e documentação técnica.
 Matheus Henrique: ☕ Backend — Lógica central e arquitetura em Java.
 
 Samuel Fellipe: 🧪 QA — Validação de APIs e testes de funcionamento.
+
+Teste:
+<img width="1313" height="674" alt="image" src="https://github.com/user-attachments/assets/ba660534-885b-425a-98cf-4815967fc919" />
 
 
 ------------------------------------------------------------------------------------------------------
@@ -81,10 +84,6 @@ Conheça os desenvolvedores responsáveis por este projeto:
 <td align="center">
 <a href="https://github.com/Samuca02">
 <img src="https://github.com/Samuca02.png" width="100px;" alt="Foto Samuel"/>
-
-<t1>Testes<t1/>
-<img width="1313" height="674" alt="image" src="https://github.com/user-attachments/assets/82962309-5efa-46b4-82d5-4f87b6392965" />
-
 
 
 <sub><b>Samuel Fellipe 42521948</b></sub>
