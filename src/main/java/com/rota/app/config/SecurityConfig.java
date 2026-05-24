@@ -4,10 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -18,15 +16,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests((requests) -> requests
-                // Permite acesso público ao CSS e imagens (se você tiver) na pasta static
-                .requestMatchers("/css/**", "/images/**", "/js/**").permitAll()
+                // IMPORTANTE: Liberamos "/cadastro" para novos usuários poderem acessar a tela
+                .requestMatchers("/css/**", "/images/**", "/js/**", "/cadastro").permitAll()
                 // Qualquer outra requisição precisa de autenticação
                 .anyRequest().authenticated()
             )
             .formLogin((form) -> form
-                // Define a URL da nossa tela de login customizada
                 .loginPage("/login")
-                // Define para onde ir após o login com sucesso (nossa tela de mapa)
                 .defaultSuccessUrl("/mapa", true)
                 .permitAll()
             )
@@ -35,16 +31,10 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Criando um usuário de teste na memória
+    // Apagamos o UserDetailsService em memória e colocamos o PasswordEncoder.
+    // Isso ensina o Spring a comparar a senha digitada na tela com o hash do banco de dados.
     @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user =
-             User.withDefaultPasswordEncoder()
-                .username("usuario")
-                .password("senha")
-                .roles("USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(user);
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
