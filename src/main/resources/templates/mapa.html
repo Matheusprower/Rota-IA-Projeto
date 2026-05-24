@@ -8,24 +8,32 @@
 
 <body>
     <div id="main-container">
+
         <div id="sidebar">
-            <h2>Rota IA: Trajeto</h2>
+
+            <div class="header">
+                <h2>🚗 Rota IA</h2>
+                <p>Planeje e otimize seus trajetos</p>
+            </div>
 
             <div id="container-pontos">
                 <div class="form-group">
                     <label>Ponto 1 (Origem)</label>
-                    <input type="text" class="input-endereco" placeholder="Digite o endereço de partida">
+                    <input type="text" class="input-endereco" placeholder="Digite o endereço inicial">
                 </div>
             </div>
 
             <div class="btn-container">
-                <button class="btn-add" onclick="adicionarNovoCampo()">+ Adicionar Parada</button>
-                <button class="btn-opt" onclick="tracarRota()">Otimizar Rota</button>
+                <button class="btn-add" onclick="adicionarNovoCampo()">➕ Adicionar</button>
+                <button class="btn-opt" onclick="tracarRota()">🚀 Otimizar</button>
             </div>
+
+            <div id="resultado"></div>
         </div>
 
-        <div id="map-container" style="width: 100%; height: 100%; min-height: 500px;"></div>
+        <div id="map-container"></div>
     </div>
+
     <script>
         let map;
         let directionsService;
@@ -33,17 +41,15 @@
         let contadorPontos = 1;
 
         function initMap() {
-            console.log("Sistema: Iniciando Google Maps...");
-
             directionsService = new google.maps.DirectionsService();
             directionsRenderer = new google.maps.DirectionsRenderer();
 
-            const centro = { lat: -19.9167, lng: -43.9333 }; // Belo Horizonte
+            const centro = { lat: -19.9167, lng: -43.9333 };
 
             map = new google.maps.Map(document.getElementById("map-container"), {
                 zoom: 13,
                 center: centro,
-                mapId: "DEMO_MAP_ID" // Ajuda a evitar alguns erros de carregamento
+                mapId: "DEMO_MAP_ID"
             });
 
             directionsRenderer.setMap(map);
@@ -51,16 +57,31 @@
         }
 
         function adicionarNovoCampo() {
-            contadorPontos++;
-            const container = document.getElementById("container-pontos");
-            const novoDiv = document.createElement("div");
-            novoDiv.className = "form-group";
-            novoDiv.innerHTML = `
-            <label>Ponto ${contadorPontos}</label>
-            <input type="text" class="input-endereco" placeholder="Digite o próximo endereço"/>
-        `;
-            container.appendChild(novoDiv);
-        }
+
+    contadorPontos++;
+
+    const container = document.getElementById("container-pontos");
+
+    const labels = container.querySelectorAll("label");
+
+    labels.forEach(label => {
+        label.textContent = label.textContent.replace(" (Destino)", "");
+    });
+
+    const div = document.createElement("div");
+    div.className = "form-group";
+
+    div.innerHTML = `
+        <label>Ponto ${contadorPontos} (Destino)</label>
+        <input 
+            type="text" 
+            class="input-endereco" 
+            placeholder="Digite o endereço"
+        >
+    `;
+
+    container.appendChild(div);
+}
 
         function tracarRota() {
             const inputs = document.getElementsByClassName("input-endereco");
@@ -73,43 +94,46 @@
             }
 
             if (enderecos.length < 2) {
-                alert("Digite pelo menos a origem e uma parada!");
+                alert("Digite pelo menos dois pontos!");
                 return;
             }
-
+            
             const origem = enderecos[0];
-            const paradas = enderecos.slice(1);
+            const destino = enderecos[enderecos.length - 1];
 
-            // Criamos os waypoints para TODAS as paradas extras
-            const waypoints = paradas.map(loc => ({
+            const waypoints = enderecos.slice(1, -1).map(loc => ({
                 location: loc,
                 stopover: true
             }));
 
             const request = {
                 origin: origem,
-                destination: origem, // Mantemos o truque da origem ser o destino
+                destination: destino,
                 waypoints: waypoints,
-                optimizeWaypoints: true, // A CHAVE DA IA
-                travelMode: google.maps.TravelMode.DRIVING,
-                provideRouteAlternatives: false, // Força a focar na melhor única
-                unitSystem: google.maps.UnitSystem.METRIC
+                optimizeWaypoints: true,
+                travelMode: google.maps.TravelMode.DRIVING
             };
 
             directionsService.route(request, (result, status) => {
                 if (status === "OK") {
-                    // Log detalhado para você ver no F12 se ele mudou a ordem
-                    console.log("Ordem original enviada (excluindo a origem):", paradas);
-                    console.log("Nova ordem sugerida pela IA:", result.routes[0].waypoint_order);
-
-                    // Corta a volta para a origem para o trajeto ficar aberto
-                    if (result.routes[0].legs.length > 1) {
-                        result.routes[0].legs.pop();
-                    }
 
                     directionsRenderer.setDirections(result);
+
+                    let totalDistancia = 0;
+                    let totalTempo = 0;
+
+                    result.routes[0].legs.forEach(leg => {
+                        totalDistancia += leg.distance.value;
+                        totalTempo += leg.duration.value;
+                    });
+
+                    document.getElementById("resultado").innerHTML = `
+                        <p><strong>Distância total:</strong> ${(totalDistancia / 1000).toFixed(2)} km</p>
+                        <p><strong>Tempo estimado:</strong> ${(totalTempo / 60).toFixed(0)} min</p>
+                    `;
+
                 } else {
-                    alert("Erro na API: " + status + ". Verifique se os endereços existem.");
+                    alert("Erro: " + status);
                 }
             });
         }
@@ -120,5 +144,4 @@
         async defer></script>
 
 </body>
-
 </html>
