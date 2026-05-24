@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Cadastro - Rota IA</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Criar Conta</h2>
+        <form th:action="@{/cadastro}" method="post">
+            <input type="text" name="nome" placeholder="Nome Completo" required>
+            <input type="text" name="username" placeholder="Usuário (Email)" required>
+            <input type="password" name="password" placeholder="Senha" required>
+            <button type="submit">Cadastrar</button>
+        </form>
+        <p style="margin-top: 15px;">
+            <a th:href="@{/login}" style="color: #3498db; text-decoration: none;">Já tenho conta</a>
+        </p>
+    </div>
+</body>
+</html>
