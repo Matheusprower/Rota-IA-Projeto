@@ -15,6 +15,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests((requests) -> requests
                 // IMPORTANTE: Liberamos "/cadastro" para novos usuários poderem acessar a tela
                 .requestMatchers("/css/**", "/images/**", "/js/**", "/cadastro").permitAll()
