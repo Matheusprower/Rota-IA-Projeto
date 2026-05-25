@@ -29,18 +29,24 @@
             </div>
 
             <div id="resultado"></div>
-        </div>
 
-        <div id="resumo-rota"
-            style="margin-top: 20px; padding: 15px; background: #34495e; border-radius: 4px; display: none;">
-            <h3 style="margin-top: 0; font-size: 18px; color: #3498db; margin-bottom: 10px;">Resumo do Trajeto</h3>
-            <p style="margin: 5px 0;">Distância Total: <span id="distancia-total"
-                    style="font-weight: bold; color: #27ae60;">--</span></p>
-            <p style="margin: 5px 0;">Tempo Estimado: <span id="tempo-total"
-                    style="font-weight: bold; color: #27ae60;">--</span></p>
-        </div>
+            <div id="resumo-rota"
+                style="margin-top: 20px; padding: 15px; background: #34495e; border-radius: 4px; display: none;">
+                <h3 style="margin-top: 0; font-size: 18px; color: #3498db; margin-bottom: 10px;">Resumo do Trajeto</h3>
+                <p style="margin: 5px 0;">Distância Total: <span id="distancia-total"
+                        style="font-weight: bold; color: #27ae60;">--</span></p>
+                <p style="margin: 5px 0;">Tempo Estimado: <span id="tempo-total"
+                        style="font-weight: bold; color: #27ae60;">--</span></p>
+            </div>
 
+            <a th:href="@{/historico}"
+                style="align-self: center; margin-top: 20px; padding: 10px 20px; background-color: white; color: #2c3e50; text-decoration: none; font-weight: bold; font-size: 14px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                📊 Ver Meu Histórico de Rotas
+            </a>
+
+        </div>
         <div id="map-container" style="width: 100%; height: 100%; min-height: 500px;"></div>
+
     </div>
 
     <script>
@@ -63,6 +69,7 @@
 
             directionsRenderer.setMap(map);
             console.log("Sistema: Mapa carregado com sucesso!");
+            atualizarLabels()
         }
 
         function adicionarNovoCampo() {
@@ -90,6 +97,7 @@
     `;
 
             container.appendChild(div);
+            atualizarLabels()
         }
 
         function tracarRota() {
@@ -132,7 +140,7 @@
 
             directionsService.route(request, (result, status) => {
                 if (status === "OK") {
-                    
+
                     // Desenha a linha no mapa
                     directionsRenderer.setDirections(result);
 
@@ -153,12 +161,45 @@
                     // 2. EM VEZ DE ALERT, FIXA OS DADOS NA TELA:
                     document.getElementById("distancia-total").innerText = km;
                     document.getElementById("tempo-total").innerText = min;
-                    
+
                     // Faz a caixinha cinza aparecer na barra lateral
                     document.getElementById("resumo-rota").style.display = "block";
 
+                    const dadosParaSalvar = {
+                        origem: origem,
+                        paradas: paradas.join(" ➔ "), // Junta as paradas com uma setinha
+                        distanciaTotal: km,
+                        tempoTotal: min
+                    };
+                    fetch('/api/rotas/salvar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dadosParaSalvar)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === "sucesso") {
+                                console.log("Rota gravada no histórico!");
+                            }
+                        })
+                        .catch(error => console.error("Erro ao salvar:", error));
+
                 } else {
                     alert("Erro na API: " + status + ". Verifique se os endereços existem.");
+                }
+            });
+        }
+
+        function atualizarLabels() {
+            const labels = document.querySelectorAll("#container-pontos label");
+
+            labels.forEach((label, index) => {
+                if (index === 0) {
+                    label.innerText = "Ponto de Partida (Origem)";
+                } else if (index === labels.length - 1) {
+                    label.innerText = "Destino Final (Fixo)";
+                } else {
+                    label.innerText = "Parada " + index + " (Otimizável)";
                 }
             });
         }

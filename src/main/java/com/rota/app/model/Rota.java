@@ -2,6 +2,7 @@ package com.rota.app.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "rotas")
@@ -22,6 +23,7 @@ public class Rota {
     private LocalDateTime dataCriacao = LocalDateTime.now();
 
     // Aqui está a mágica: Liga esta rota ao usuário que está logado
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
