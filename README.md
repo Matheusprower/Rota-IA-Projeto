@@ -1,21 +1,53 @@
-🚀 Rota IA-Projeto
+ Rota IA-Projeto
 
 É um sistema inteligente desenvolvido para otimização logística e gestão de paradas. O objetivo principal é solucionar problemas de roteirização complexos, organizando pontos de embarque de forma estratégica para garantir a máxima eficiência operacional.
 
 --------------------------------------------
 
+Funcionalidades
 
-Tecnologia Utilizada:
+* **Autenticação Segura:** Sistema de login e cadastro com senhas criptografadas (BCrypt).
+* **Otimização de Trajetos:** Integração com a API do Google Maps para calcular a rota mais eficiente entre múltiplos pontos.
+* **Dashboard SPA (Single Page Application):** Interface fluida onde o mapa e os dados não são perdidos durante a navegação.
+* **Histórico Inteligente:** Salvamento automático de rotas no banco de dados local.
+* **Portabilidade de Dados:** Exportação e Importação de histórico de rotas via arquivos `.json`.
 
- -Java 22 ☕
- 
- ---------------------------------------------
- 
-Ferramentas: 
+---------------------------------------------
 
-Git & GitHub 🗄️
+Tecnologias e Ferramentas
 
-VS Code 🖥️
+**Backend & Estrutura:**
+* Java 22 ☕
+* Spring Boot (Web, Data JPA, Security)
+* Integração com Google Maps API
+
+**Frontend:**
+* HTML5, CSS3 e JavaScript (Vanilla)
+* Thymeleaf (Server-side rendering)
+
+**Banco de Dados & Infraestrutura:**
+* MySQL (Conector J)
+* Docker (Para conteinerização do banco de dados)
+* H2 Database (Para testes em memória)
+* JUnit & Mockito (Para testes automatizados)
+
+**Ferramentas:**
+* Git & GitHub 🗄️
+* VS Code / IDEs Java
+
+---------------------------------------------------------
+
+Como executar o projeto localmente
+
+### Pré-requisitos
+* [Java 22+](https://www.oracle.com/java/technologies/javase/jdk22-archive-downloads.html) instalado.
+* [Maven](https://maven.apache.org/) instalado.
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/) rodando (para o MySQL).
+
+### Passo a Passo
+1. Clone o repositório:
+   ```bash
+   git clone [https://github.com/SeuUsuario/Rota-IA.git](https://github.com/SeuUsuario/Rota-IA.git)
  
 ------------------------------------------------------------------------------------------------------
 
@@ -91,19 +123,6 @@ Conheça os desenvolvedores responsáveis por este projeto:
 </td>
 </tr>
 </table>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   
 
