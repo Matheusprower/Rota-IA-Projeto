@@ -37,16 +37,62 @@
                         style="font-weight: bold; color: #27ae60;">--</span></p>
                 <p style="margin: 5px 0;">Tempo Estimado: <span id="tempo-total"
                         style="font-weight: bold; color: #27ae60;">--</span></p>
+                <small style="color: #bdc3c7; display:block; margin-top:5px;">✓ Salvo automaticamente no banco
+                    local</small>
             </div>
 
-            <a th:href="@{/historico}"
-                style="align-self: center; margin-top: 20px; padding: 10px 20px; background-color: white; color: #2c3e50; text-decoration: none; font-weight: bold; font-size: 14px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+            <button onclick="abrirModalHistorico()"
+                style="align-self: center; margin-top: 20px; padding: 10px 20px; background-color: white; color: #2c3e50; font-weight: bold; font-size: 14px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: none; width: 100%; cursor: pointer;">
                 📊 Ver Meu Histórico de Rotas
-            </a>
+            </button>
 
         </div>
+
         <div id="map-container" style="width: 100%; height: 100%; min-height: 500px;"></div>
 
+    </div>
+
+    <div id="modal-historico" class="modal-historico">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fecharModalHistorico()">&times;</span>
+
+            <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-top: 0;">Seu
+                Histórico de Rotas Otimizadas</h2>
+
+            <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+                <a th:href="@{/api/rotas/exportar}" class="btn-modal" style="background-color: #27ae60;">⬇️ Exportar
+                    Histórico (.json)</a>
+
+                <form th:action="@{/api/rotas/importar}" method="post" enctype="multipart/form-data"
+                    style="display: flex; gap: 8px; align-items: center; background: #ecf0f1; padding: 6px 12px; border-radius: 4px;">
+                    <label style="font-size: 14px; font-weight: bold; color: #2c3e50;">Importar de outra
+                        máquina:</label>
+                    <input type="file" name="file" accept=".json" required style="font-size: 13px;">
+                    <button type="submit" class="btn-modal" style="background-color: #f39c12; padding: 6px 12px;">⬆️
+                        Enviar arquivo</button>
+                </form>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Origem</th>
+                            <th>Paradas Otimizadas</th>
+                            <th>Distância</th>
+                            <th>Tempo Estimado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dados-tabela-historico">
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="aviso-vazio" style="margin-top: 20px; color: #7f8c8d; font-style: italic; display: none;">
+                Você ainda não possui nenhuma rota salva no seu histórico local.
+            </div>
+        </div>
     </div>
 
     <script>
@@ -69,15 +115,74 @@
 
             directionsRenderer.setMap(map);
             console.log("Sistema: Mapa carregado com sucesso!");
-            atualizarLabels()
+            atualizarLabels();
+
+            // Verifica se acabou de fazer upload de um arquivo e já abre o histórico
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('importSuccess')) {
+                abrirModalHistorico();
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
         }
 
+        // LÓGICA DO MODAL (SPA)
+        function abrirModalHistorico() {
+            document.getElementById("modal-historico").style.display = "flex";
+            carregarDadosHistorico();
+        }
+
+        function fecharModalHistorico() {
+            document.getElementById("modal-historico").style.display = "none";
+        }
+
+        function carregarDadosHistorico() {
+            const tbody = document.getElementById("dados-tabela-historico");
+            const avisoVazio = document.getElementById("aviso-vazio");
+            tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#7f8c8d;'>Carregando histórico...</td></tr>";
+
+            fetch('/api/rotas')
+                .then(response => response.json())
+                .then(rotas => {
+                    tbody.innerHTML = "";
+
+                    if (rotas.length === 0) {
+                        avisoVazio.style.display = "block";
+                    } else {
+                        avisoVazio.style.display = "none";
+                        rotas.forEach(rota => {
+                            let dataFormatada = "--/--/---- --:--";
+                            if (rota.dataCriacao) {
+                                const d = new Date(rota.dataCriacao);
+                                const dia = String(d.getDate()).padStart(2, '0');
+                                const mes = String(d.getMonth() + 1).padStart(2, '0');
+                                const ano = d.getFullYear();
+                                const hora = String(d.getHours()).padStart(2, '0');
+                                const min = String(d.getMinutes()).padStart(2, '0');
+                                dataFormatada = `${dia}/${mes}/${ano} ${hora}:${min}`;
+                            }
+
+                            const tr = document.createElement("tr");
+                            tr.innerHTML = `
+                                <td>${dataFormatada}</td>
+                                <td>${rota.origem || ''}</td>
+                                <td>${rota.paradas || ''}</td>
+                                <td><strong>${rota.distanciaTotal || '--'}</strong></td>
+                                <td><strong>${rota.tempoTotal || '--'}</strong></td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Erro ao buscar histórico:", error);
+                    tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#e74c3c;'>Erro ao carregar os dados do servidor local.</td></tr>";
+                });
+        }
+
+        // --- LÓGICA DO MAPA ---
         function adicionarNovoCampo() {
-
             contadorPontos++;
-
             const container = document.getElementById("container-pontos");
-
             const labels = container.querySelectorAll("label");
 
             labels.forEach(label => {
@@ -86,25 +191,18 @@
 
             const div = document.createElement("div");
             div.className = "form-group";
-
             div.innerHTML = `
-        <label>Ponto ${contadorPontos} (Destino)</label>
-        <input 
-            type="text" 
-            class="input-endereco" 
-            placeholder="Digite o endereço"
-        >
-    `;
-
+                <label>Ponto ${contadorPontos} (Destino)</label>
+                <input type="text" class="input-endereco" placeholder="Digite o endereço">
+            `;
             container.appendChild(div);
-            atualizarLabels()
+            atualizarLabels();
         }
 
         function tracarRota() {
             const inputs = document.getElementsByClassName("input-endereco");
             const enderecos = [];
 
-            // Pega apenas os campos que não estão vazios
             for (let input of inputs) {
                 if (input.value.trim() !== "") {
                     enderecos.push(input.value.trim());
@@ -116,11 +214,8 @@
                 return;
             }
 
-            // 1. A NOVA LÓGICA DE PONTOS
             const origem = enderecos[0];
-            const destino = enderecos[enderecos.length - 1]; // O último campo é o destino final
-
-            // As paradas são todos os endereços do MEIO (exclui o primeiro e o último)
+            const destino = enderecos[enderecos.length - 1];
             const paradas = enderecos.slice(1, enderecos.length - 1);
 
             const waypoints = paradas.map(loc => ({
@@ -128,49 +223,42 @@
                 stopover: true
             }));
 
-            // 2. PEDIDO LIMPO PARA O GOOGLE
             const request = {
                 origin: origem,
-                destination: destino, // Agora o destino é real!
+                destination: destino,
                 waypoints: waypoints,
-                optimizeWaypoints: true, // A IA agora funciona livremente
+                optimizeWaypoints: true,
                 travelMode: google.maps.TravelMode.DRIVING,
                 unitSystem: google.maps.UnitSystem.METRIC
             };
 
             directionsService.route(request, (result, status) => {
                 if (status === "OK") {
-
-                    // Desenha a linha no mapa
                     directionsRenderer.setDirections(result);
 
-                    // 1. Calcula a distância e o tempo totais
                     let totalDistancia = 0;
                     let totalTempo = 0;
                     const pernas = result.routes[0].legs;
 
                     pernas.forEach(leg => {
-                        totalDistancia += leg.distance.value; // em metros
-                        totalTempo += leg.duration.value;     // em segundos
+                        totalDistancia += leg.distance.value;
+                        totalTempo += leg.duration.value;
                     });
 
-                    // Converte os valores para KM e Minutos
                     const km = (totalDistancia / 1000).toFixed(1) + " km";
                     const min = Math.round(totalTempo / 60) + " min";
 
-                    // 2. EM VEZ DE ALERT, FIXA OS DADOS NA TELA:
                     document.getElementById("distancia-total").innerText = km;
                     document.getElementById("tempo-total").innerText = min;
-
-                    // Faz a caixinha cinza aparecer na barra lateral
                     document.getElementById("resumo-rota").style.display = "block";
 
                     const dadosParaSalvar = {
                         origem: origem,
-                        paradas: paradas.join(" ➔ "), // Junta as paradas com uma setinha
+                        paradas: paradas.join(" ➔ "),
                         distanciaTotal: km,
                         tempoTotal: min
                     };
+
                     fetch('/api/rotas/salvar', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -192,7 +280,6 @@
 
         function atualizarLabels() {
             const labels = document.querySelectorAll("#container-pontos label");
-
             labels.forEach((label, index) => {
                 if (index === 0) {
                     label.innerText = "Ponto de Partida (Origem)";
