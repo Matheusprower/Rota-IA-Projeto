@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,33 +31,27 @@ public class HistoricoController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @GetMapping("/historico")
-    public String verHistorico(Model model) {
-        // 1. Identifica qual usuário do sistema está logado no momento
+    // Retorna o histórico em formato JSON para o JavaScript renderizar no mapa
+    @GetMapping("/api/rotas")
+    @ResponseBody
+    public ResponseEntity<List<Rota>> listarRotas() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
-
         Usuario usuario = usuarioRepository.findByUsername(username);
 
-        // 2. Busca no banco de dados as rotas pertencentes EXCLUSIVAMENTE a esse usuário
         List<Rota> rotas = rotaRepository.findByUsuarioOrderByDataCriacaoDesc(usuario);
-
-        // 3. Envia a lista de rotas para a tela HTML do Thymeleaf
-        model.addAttribute("rotas", rotas);
-
-        return "historico";
+        return ResponseEntity.ok(rotas);
     }
 
+    // SALVAR ROTA 
     @PostMapping("/api/rotas/salvar")
     @ResponseBody
     public ResponseEntity<?> salvarRota(@RequestBody Map<String, Object> dados) {
         try {
-            // 1. Pega o usuário logado
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String username = auth.getName();
             Usuario usuario = usuarioRepository.findByUsername(username);
 
-            // 2. Cria o objeto Rota com os dados vindos da tela
             Rota rota = new Rota();
             rota.setOrigem((String) dados.get("origem"));
             rota.setParadas((String) dados.get("paradas"));
@@ -66,7 +59,6 @@ public class HistoricoController {
             rota.setTempoTotal((String) dados.get("tempoTotal"));
             rota.setUsuario(usuario);
 
-            // 3. Salva no banco de dados do Docker
             rotaRepository.save(rota);
 
             return ResponseEntity.ok().body(Map.of("status", "sucesso"));
@@ -75,22 +67,19 @@ public class HistoricoController {
         }
     }
 
-    // === 1. EXPORTAR HISTÓRICO (GERA O ARQUIVO .JSON) ===
+    // EXPORTAR HISTÓRICO (.JSON)
     @GetMapping("/api/rotas/exportar")
     public ResponseEntity<byte[]> exportarRotas() {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             Usuario usuario = usuarioRepository.findByUsername(auth.getName());
 
-            // Busca rotas do usuário
             List<Rota> rotas = rotaRepository.findByUsuarioOrderByDataCriacaoDesc(usuario);
 
-            // Transforma a lista do Java em texto JSON
             ObjectMapper mapper = new ObjectMapper();
-            mapper.findAndRegisterModules(); // Suporte para o LocalDateTime
+            mapper.findAndRegisterModules();
             String json = mapper.writeValueAsString(rotas);
 
-            // Prepara o arquivo para download
             byte[] jsonBytes = json.getBytes();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -102,30 +91,28 @@ public class HistoricoController {
         }
     }
 
-    // === 2. IMPORTAR HISTÓRICO (LÊ O ARQUIVO E SALVA NO BANCO) ===
+    // IMPORTAR HISTÓRICO redireciona de volta ao Mapa
     @PostMapping("/api/rotas/importar")
     public String importarRotas(@RequestParam("file") MultipartFile file) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             Usuario usuario = usuarioRepository.findByUsername(auth.getName());
 
-            // Lê o arquivo JSON e transforma de volta em uma lista de Rotas
             ObjectMapper mapper = new ObjectMapper();
             mapper.findAndRegisterModules();
             List<Rota> rotasImportadas = mapper.readValue(file.getInputStream(), new TypeReference<List<Rota>>() {
             });
 
-            // Salva cada rota no banco de dados do novo computador
             for (Rota rota : rotasImportadas) {
-                rota.setId(null); // Reseta o ID para o MySQL criar um novo
-                rota.setUsuario(usuario); // Associa as rotas ao usuário logado nesta máquina
+                rota.setId(null);
+                rota.setUsuario(usuario);
                 rotaRepository.save(rota);
             }
         } catch (Exception e) {
             System.out.println("Erro ao importar: " + e.getMessage());
         }
 
-        // Atualiza a página de histórico
-        return "redirect:/historico";
+        // REDIRECIONA PARA O MAPA DIRETAMENTE
+        return "redirect:/mapa?importSuccess";
     }
 }
