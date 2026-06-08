@@ -20,6 +20,7 @@ html {
     flex-direction: column;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
     z-index: 10;
+    overflow-y: auto;
 }
 
 h2 {
@@ -48,7 +49,7 @@ input[type="text"] {
 }
 
 button {
-    flex: 1;
+    /*flex: 1;*/
     padding: 10px;
     border: none;
     border-radius: 4px;
