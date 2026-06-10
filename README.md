@@ -70,7 +70,8 @@ Teste:
 <img width="1422" height="966" alt="Captura de tela 2026-06-07 170124" src="https://github.com/user-attachments/assets/053c6e3f-42cc-4f08-b8ca-5f81770612aa" />
 <img width="1473" height="958" alt="Captura de tela 2026-06-07 170134" src="https://github.com/user-attachments/assets/a7a2ea3a-146e-429d-b0c8-88db3b11f9cc" />
 <img width="1917" height="982" alt="Captura de tela 2026-06-07 170208" src="https://github.com/user-attachments/assets/eba8f4d0-2c99-415b-950c-9d9d44ca6453" />
-<img width="1572" height="971" alt="Captura de tela 2026-06-07 170019" src="https://github.com/user-attachments/assets/bc5bb549-0f82-4bf9-bc0c-e20a099b7599" />
+<img width="1572" height="971" alt="Captura de tela 2026-06-07 170019" src="![Uploading image.png…]()
+" />
 
 
 ------------------------------------------------------------------------------------------------------
