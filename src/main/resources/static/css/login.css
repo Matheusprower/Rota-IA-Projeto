@@ -4,8 +4,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .login-container {
@@ -14,6 +16,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     width: 300px;
+    max-width: 100%;
     text-align: center;
 }
 
@@ -26,11 +29,12 @@ input[type="text"], input[type="password"] {
     border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: border-box;
+    font-size: 16px; /* evita zoom automático no iOS */
 }
 
 button {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     background-color: #3498db;
     color: white;
     border: none;
@@ -43,3 +47,15 @@ button {
 button:hover { background-color: #2980b9; }
 
 .error { color: #e74c3c; margin-bottom: 1rem; font-size: 14px; }
+
+/* Mobile */
+@media (max-width: 480px) {
+    body {
+        align-items: flex-start;
+        padding-top: 40px;
+    }
+    .login-container {
+        width: 100%;
+        padding: 1.5rem;
+    }
+}
