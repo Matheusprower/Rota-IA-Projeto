@@ -8,12 +8,12 @@ html {
 
 #main-container {
     display: flex;
-    height: 100%;
+    height: 100vh;
 }
 
 #sidebar {
-    width: 350px;
-    min-width: 350px;
+    width: 280px;
+    min-width: 220px;
     background: linear-gradient(135deg, #041f77 0%, #1e1b4b 100%);
     color: white;
     padding: 20px;
@@ -22,6 +22,7 @@ html {
     box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
     z-index: 10;
     overflow-y: auto;
+    flex-shrink: 0;
 }
 
 h2 {
@@ -41,13 +42,14 @@ input[type="text"] {
     border-radius: 4px;
     margin-top: 5px;
     box-sizing: border-box;
-    font-size: 16px; /* evita zoom automático no iOS */
+    font-size: 16px;
 }
 
 .btn-container {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     margin-top: 10px;
+    flex-wrap: wrap;
 }
 
 button {
@@ -62,6 +64,7 @@ button {
 .btn-add {
     background-color: #3498db;
     color: white;
+    flex: 1;
 }
 
 .btn-add:hover { background-color: #2980b9; }
@@ -69,14 +72,16 @@ button {
 .btn-opt {
     background-color: #27ae60;
     color: white;
+    flex: 1;
 }
 
 .btn-opt:hover { background-color: #219150; }
 
 #map-container {
     flex: 1;
+    height: 100vh;
     background-color: #e9e9e9;
-    height: 100%;
+    min-width: 0;
 }
 
 /* ESTILO MODAL DO HISTÓRICO */
@@ -151,66 +156,73 @@ button {
 
 /* ===== RESPONSIVIDADE MOBILE ===== */
 @media (max-width: 768px) {
-    body, html {
-        overflow: auto; /* permite scroll no mobile */
-    }
-
-    #main-container {
-        flex-direction: column; /* sidebar em cima, mapa embaixo */
-        height: auto;
-        min-height: 100vh;
-    }
-
     #sidebar {
-        width: 100%;
-        min-width: unset;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        padding: 15px;
+        width: 220px;
+        min-width: 180px;
+        padding: 12px;
+        font-size: 13px;
     }
 
-    #map-container {
-        height: 60vh; /* mapa ocupa 60% da altura da tela */
-        min-height: 350px;
+    h2 {
+        font-size: 16px;
+    }
+
+    .header p {
+        font-size: 12px;
+    }
+
+    input[type="text"] {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    button {
+        padding: 8px;
+        font-size: 13px;
     }
 
     .btn-container {
         flex-direction: column;
+        gap: 6px;
     }
 
     .btn-add, .btn-opt {
+        flex: none;
         width: 100%;
-        padding: 12px;
-        font-size: 15px;
     }
 
     .modal-content {
         width: 95%;
         max-height: 90%;
-        padding: 15px;
-    }
-
-    /* Botões do modal empilham no mobile */
-    .modal-content > div[style*="display: flex"] {
-        flex-direction: column !important;
+        padding: 12px;
     }
 
     .modal-table th,
     .modal-table td {
-        padding: 8px 6px;
-        font-size: 13px;
+        padding: 6px 4px;
+        font-size: 11px;
     }
 }
 
 @media (max-width: 480px) {
     #sidebar {
-        padding: 12px;
+        width: 160px;
+        min-width: 140px;
+        padding: 10px;
+        font-size: 12px;
     }
 
     h2 {
-        font-size: 18px;
+        font-size: 14px;
     }
 
-    .header p {
+    input[type="text"] {
+        padding: 6px;
         font-size: 13px;
+    }
+
+    button {
+        padding: 7px;
+        font-size: 12px;
     }
 }
