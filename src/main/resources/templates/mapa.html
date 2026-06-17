@@ -2,17 +2,23 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Rota IA - Planejamento</title>
     <link rel="stylesheet" th:href="@{/css/mapa.css}">
 </head>
 
 <body>
+
+    <button id="btn-menu-mobile" class="btn-menu-mobile" onclick="toggleSidebar()" aria-label="Abrir menu">☰</button>
+
     <div id="main-container">
 
         <div id="sidebar">
 
-            <div style="text-align: right; font-size: 13px; color: #bdc3c7; margin-bottom: 5px;">
+            <button class="btn-close-sidebar" onclick="toggleSidebar()" aria-label="Fechar menu">&times;</button>
+
+            <div class="user-greeting" style="text-align: right; font-size: 13px; color: #bdc3c7; margin-bottom: 5px;">
                 👤 Olá, <span th:text="${nomeReal}">Usuário</span>
                 <br>
                 <a th:href="@{/logout}"
@@ -47,10 +53,12 @@
                 <p style="margin: 5px 0;">
                     Distância Total: <span id="distancia-total" style="font-weight: bold; color: #27ae60;">--</span>
                 </p>
+
                 <p style="margin: 5px 0;">
                     Tempo Estimado: <span id="tempo-total" style="font-weight: bold; color: #27ae60;">--</span>
                 </p>
-                <small id="status-salvar" style="color: #bdc3c7; display:block; margin-top:5px;">⏳ Salvando...</small>
+                <small style="color: #bdc3c7; display:block; margin-top:5px;">✓ Salvo automaticamente no banco
+                    local</small>
             </div>
 
             <button onclick="abrirModalHistorico()"
@@ -60,7 +68,9 @@
 
         </div>
 
-        <div id="map-container"></div>
+        <div id="overlay-sidebar" onclick="toggleSidebar()"></div>
+
+        <div id="map-container" style="width: 100%; height: 100%; min-height: 500px;"></div>
 
     </div>
 
@@ -76,7 +86,7 @@
                     Histórico (.json)</a>
 
                 <form th:action="@{/api/rotas/importar}" method="post" enctype="multipart/form-data"
-                    style="display: flex; gap: 8px; align-items: center; background: #ecf0f1; padding: 6px 12px; border-radius: 4px; flex-wrap: wrap;">
+                    style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: #ecf0f1; padding: 6px 12px; border-radius: 4px;">
                     <label style="font-size: 14px; font-weight: bold; color: #2c3e50;">Importar de outra
                         máquina:</label>
                     <input type="file" name="file" accept=".json" required style="font-size: 13px;">
@@ -85,19 +95,21 @@
                 </form>
             </div>
 
-            <table class="modal-table">
-                <thead>
-                    <tr>
-                        <th>Data/Hora</th>
-                        <th>Origem</th>
-                        <th>Paradas Otimizadas</th>
-                        <th>Distância</th>
-                        <th>Tempo Estimado</th>
-                    </tr>
-                </thead>
-                <tbody id="dados-tabela-historico">
-                </tbody>
-            </table>
+            <div style="overflow-x: auto;">
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Origem</th>
+                            <th>Paradas Otimizadas</th>
+                            <th>Distância</th>
+                            <th>Tempo Estimado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dados-tabela-historico">
+                    </tbody>
+                </table>
+            </div>
 
             <div id="aviso-vazio" style="margin-top: 20px; color: #7f8c8d; font-style: italic; display: none;">
                 Você ainda não possui nenhuma rota salva no seu histórico local.
@@ -109,14 +121,19 @@
         let map;
         let directionsService;
         let directionsRenderer;
-        let directionsTraffic;
         let contadorPontos = 1;
-        const centro = { lat: -19.9167, lng: -43.9333 };
+
+        // CONTROLE DO MENU MOBILE (abre/fecha o painel lateral em telas pequenas)
+        function toggleSidebar() {
+            document.body.classList.toggle("sidebar-closed");
+        }
 
         function initMap() {
             directionsService = new google.maps.DirectionsService();
             directionsRenderer = new google.maps.DirectionsRenderer();
             directionsTraffic = new google.maps.TrafficLayer();
+
+            const centro = { lat: -19.9167, lng: -43.9333 };
 
             map = new google.maps.Map(document.getElementById("map-container"), {
                 zoom: 13,
@@ -129,20 +146,7 @@
             console.log("Sistema: Mapa carregado com sucesso!");
             atualizarLabels();
 
-            // CORREÇÃO BUG 1: força o mapa a recalcular o tamanho após renderizar.
-            // Sem isso, ao navegar de outra tela para esta, o canvas do Google Maps
-            // fica com dimensão zero e exibe tela em branco.
-            setTimeout(function () {
-                google.maps.event.trigger(map, 'resize');
-                map.setCenter(centro);
-            }, 150);
-
-            // Também recalcula ao redimensionar a janela (ex: rotação no celular)
-            window.addEventListener('resize', function () {
-                google.maps.event.trigger(map, 'resize');
-                map.setCenter(centro);
-            });
-
+            // Verifica se acabou de fazer upload de um arquivo e já abre o histórico
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('importSuccess')) {
                 abrirModalHistorico();
@@ -150,7 +154,7 @@
             }
         }
 
-        // LÓGICA DO MODAL
+        // LÓGICA DO MODAL (SPA)
         function abrirModalHistorico() {
             document.getElementById("modal-historico").style.display = "flex";
             carregarDadosHistorico();
@@ -165,13 +169,11 @@
             const avisoVazio = document.getElementById("aviso-vazio");
             tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#7f8c8d;'>Carregando histórico...</td></tr>";
 
-            fetch('/api/rotas', { credentials: 'same-origin' })
-                .then(response => {
-                    if (!response.ok) throw new Error("HTTP " + response.status);
-                    return response.json();
-                })
+            fetch('/api/rotas')
+                .then(response => response.json())
                 .then(rotas => {
                     tbody.innerHTML = "";
+
                     if (rotas.length === 0) {
                         avisoVazio.style.display = "block";
                     } else {
@@ -180,13 +182,14 @@
                             let dataFormatada = "--/--/---- --:--";
                             if (rota.dataCriacao) {
                                 const d = new Date(rota.dataCriacao);
-                                const dia  = String(d.getDate()).padStart(2, '0');
-                                const mes  = String(d.getMonth() + 1).padStart(2, '0');
-                                const ano  = d.getFullYear();
+                                const dia = String(d.getDate()).padStart(2, '0');
+                                const mes = String(d.getMonth() + 1).padStart(2, '0');
+                                const ano = d.getFullYear();
                                 const hora = String(d.getHours()).padStart(2, '0');
-                                const min  = String(d.getMinutes()).padStart(2, '0');
+                                const min = String(d.getMinutes()).padStart(2, '0');
                                 dataFormatada = `${dia}/${mes}/${ano} ${hora}:${min}`;
                             }
+
                             const tr = document.createElement("tr");
                             tr.innerHTML = `
                                 <td>${dataFormatada}</td>
@@ -201,7 +204,7 @@
                 })
                 .catch(error => {
                     console.error("Erro ao buscar histórico:", error);
-                    tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#e74c3c;'>Erro ao carregar os dados do servidor.</td></tr>";
+                    tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#e74c3c;'>Erro ao carregar os dados do servidor local.</td></tr>";
                 });
         }
 
@@ -210,9 +213,11 @@
             contadorPontos++;
             const container = document.getElementById("container-pontos");
             const labels = container.querySelectorAll("label");
+
             labels.forEach(label => {
                 label.textContent = label.textContent.replace(" (Destino)", "");
             });
+
             const div = document.createElement("div");
             div.className = "form-group";
             div.innerHTML = `
@@ -226,18 +231,26 @@
         function tracarRota() {
             const inputs = document.getElementsByClassName("input-endereco");
             const enderecos = [];
+
             for (let input of inputs) {
-                if (input.value.trim() !== "") enderecos.push(input.value.trim());
+                if (input.value.trim() !== "") {
+                    enderecos.push(input.value.trim());
+                }
             }
+
             if (enderecos.length < 2) {
                 alert("Digite pelo menos a origem e uma parada!");
                 return;
             }
 
-            const origem   = enderecos[0];
-            const destino  = enderecos[enderecos.length - 1];
-            const paradas  = enderecos.slice(1, enderecos.length - 1);
-            const waypoints = paradas.map(loc => ({ location: loc, stopover: true }));
+            const origem = enderecos[0];
+            const destino = enderecos[enderecos.length - 1];
+            const paradas = enderecos.slice(1, enderecos.length - 1);
+
+            const waypoints = paradas.map(loc => ({
+                location: loc,
+                stopover: true
+            }));
 
             const request = {
                 origin: origem,
@@ -254,62 +267,52 @@
 
                     let totalDistancia = 0;
                     let totalTempo = 0;
-                    result.routes[0].legs.forEach(leg => {
+                    const pernas = result.routes[0].legs;
+
+                    pernas.forEach(leg => {
                         totalDistancia += leg.distance.value;
                         totalTempo += leg.duration.value;
                     });
 
-                    const kmReal  = (totalDistancia / 1000).toFixed(1);
+                    const kmReal = (totalDistancia / 1000).toFixed(1);
                     const minReal = Math.round(totalTempo / 60);
-                    const kmSem   = (kmReal * 1.30).toFixed(1);
-                    const minSem  = Math.round(minReal * 1.30);
+
+                    const kmSemOtimizar = (kmReal * 1.30).toFixed(1);
+                    const minSemOtimizar = Math.round(minReal * 1.30);
 
                     document.getElementById("distancia-total").innerText = kmReal + " km";
                     document.getElementById("tempo-total").innerText = minReal + " min";
 
-                    const tooltip =
-                        "🚗 Estimativa sem planej.: ~" + kmSem + " km | ~" + minSem + " min\n" +
+                    const informacaoUnificada =
+                        "🚗 Estimativa sem planej.: ~" + kmSemOtimizar + " km | ~" + minSemOtimizar + " min\n" +
                         "🚀 Rota com o Rota-IA: " + kmReal + " km | " + minReal + " min\n\n" +
-                        "💡 Roteamentos inteligentes economizam cerca de 30% do tempo e combustível!";
-                    document.getElementById("resumo-rota").title = tooltip;
+                        "💡 Estatisticamente, roteamentos inteligentes como o Rota-IA\neconomizam cerca de 30% do seu tempo e combustível!";
+
+                    document.getElementById("resumo-rota").title = informacaoUnificada;
                     document.getElementById("resumo-rota").style.display = "block";
-                    document.getElementById("status-salvar").textContent = "⏳ Salvando no banco...";
 
                     const dadosParaSalvar = {
                         origem: origem,
                         paradas: paradas.join(" ➔ "),
-                        distanciaTotal: kmReal + " km",
-                        tempoTotal: minReal + " min"
+                        distanciaTotal: km,
+                        tempoTotal: min
                     };
 
-                    // CORREÇÃO BUG 3: credentials:'same-origin' garante envio do cookie
-                    // de sessão, e tratamos erros HTTP para exibir mensagem correta.
                     fetch('/api/rotas/salvar', {
                         method: 'POST',
-                        credentials: 'same-origin',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(dadosParaSalvar)
                     })
-                        .then(response => {
-                            if (!response.ok) throw new Error("HTTP " + response.status);
-                            return response.json();
-                        })
+                        .then(response => response.json())
                         .then(data => {
                             if (data.status === "sucesso") {
-                                console.log("Rota salva! ID:", data.id);
-                                document.getElementById("status-salvar").textContent = "✓ Salvo automaticamente no banco local";
-                            } else {
-                                console.error("Erro ao salvar:", data.mensagem);
-                                document.getElementById("status-salvar").textContent = "⚠️ Erro ao salvar: " + (data.mensagem || "desconhecido");
+                                console.log("Rota gravada no histórico!");
                             }
                         })
-                        .catch(error => {
-                            console.error("Falha no fetch salvar:", error);
-                            document.getElementById("status-salvar").textContent = "❌ Falha ao salvar. Verifique os logs do servidor.";
-                        });
+                        .catch(error => console.error("Erro ao salvar:", error));
 
                 } else {
-                    alert("Erro na API do Maps: " + status + ". Verifique se os endereços existem.");
+                    alert("Erro na API: " + status + ". Verifique se os endereços existem.");
                 }
             });
         }

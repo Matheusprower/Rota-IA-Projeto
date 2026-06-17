@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f4f7f6;
@@ -6,21 +10,20 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    padding: 20px;
-    box-sizing: border-box;
+    padding: 16px;
 }
 
 .login-container {
     background-color: #fff;
-    padding: 2rem;
+    padding: 1.5rem 1.25rem;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    width: 300px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 300px;
     text-align: center;
 }
 
-h2 { color: #2c3e50; margin-bottom: 1.5rem; }
+h2 { color: #2c3e50; margin-bottom: 1.5rem; font-size: 1.4rem; }
 
 input[type="text"], input[type="password"] {
     width: 100%;
@@ -29,12 +32,12 @@ input[type="text"], input[type="password"] {
     border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: border-box;
-    font-size: 16px; /* evita zoom automático no iOS */
+    font-size: 16px;
 }
 
 button {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     background-color: #3498db;
     color: white;
     border: none;
@@ -48,14 +51,13 @@ button:hover { background-color: #2980b9; }
 
 .error { color: #e74c3c; margin-bottom: 1rem; font-size: 14px; }
 
-/* Mobile */
-@media (max-width: 480px) {
-    body {
-        align-items: flex-start;
-        padding-top: 40px;
-    }
+/* A partir de telas pequenas/tablets em diante, mantém o card no tamanho original */
+@media (min-width: 400px) {
     .login-container {
-        width: 100%;
-        padding: 1.5rem;
+        padding: 2rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
     }
 }

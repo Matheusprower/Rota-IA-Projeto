@@ -5,9 +5,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    padding: 10px;
-    box-sizing: border-box;
+    height: 100vh;
 }
 
 .card {
@@ -16,8 +14,6 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     text-align: center;
-    width: 100%;
-    max-width: 400px;
 }
 
 .hidden { display: none !important; }
@@ -39,7 +35,6 @@ body {
 
 #controls {
     width: 300px;
-    min-width: 300px;
     padding: 20px;
     border-right: 1px solid #ddd;
     overflow-y: auto;
@@ -51,8 +46,6 @@ input {
     margin: 5px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 16px;
 }
 
 #map {
@@ -66,42 +59,4 @@ input {
     color: white;
     font-weight: bold;
     cursor: pointer;
-    width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    margin-top: 8px;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-    body {
-        align-items: flex-start;
-        padding: 10px;
-    }
-
-    #main-panel {
-        width: 100%;
-        height: auto;
-        min-height: 90vh;
-    }
-
-    .content {
-        flex-direction: column;
-        overflow: auto;
-    }
-
-    #controls {
-        width: 100%;
-        min-width: unset;
-        border-right: none;
-        border-bottom: 1px solid #ddd;
-        padding: 15px;
-    }
-
-    #map {
-        height: 55vh;
-        min-height: 300px;
-    }
 }
