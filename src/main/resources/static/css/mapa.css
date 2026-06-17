@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body,
 html {
     height: 100%;
@@ -13,12 +17,12 @@ html {
 
 #sidebar {
     width: 350px;
-    background-color: #2c3e50;
+    background: linear-gradient(135deg, #041f77 0%, #1e1b4b 100%);
     color: white;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
     z-index: 10;
     overflow-y: auto;
 }
@@ -84,7 +88,7 @@ button {
 .modal-historico {
     display: none;
     position: fixed;
-    z-index: 1000;
+    z-index: 2000;
     left: 0;
     top: 0;
     width: 100%;
@@ -152,4 +156,214 @@ button {
     border: none;
     cursor: pointer;
     transition: background 0.3s;
+}
+
+/* =====================================================
+   CONTROLES EXCLUSIVOS DO MENU MOBILE
+   Ocultos no desktop. Só aparecem dentro do breakpoint mobile abaixo.
+   ===================================================== */
+.btn-menu-mobile,
+.btn-close-sidebar,
+#overlay-sidebar {
+    display: none;
+}
+
+/* =====================================================
+   RESPONSIVIDADE - TABLETS E CELULARES (<= 880px)
+   A sidebar passa a funcionar como um painel deslizante
+   (estilo app), e o mapa ocupa a tela inteira.
+   ===================================================== */
+@media (max-width: 880px) {
+
+    #main-container {
+        position: relative;
+    }
+
+    #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 82%;
+        max-width: 320px;
+        padding-top: calc(20px + env(safe-area-inset-top, 0px));
+        transform: translateX(0);
+        transition: transform 0.3s ease;
+        z-index: 1001;
+    }
+
+    #sidebar.sidebar-closed,
+    body.sidebar-closed #sidebar {
+        transform: translateX(-100%);
+    }
+
+    .btn-close-sidebar {
+        display: block;
+        position: absolute;
+        top: calc(14px + env(safe-area-inset-top, 0px));
+        right: 14px;
+        background: none;
+        border: none;
+        color: #ffffff;
+        font-size: 26px;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .user-greeting {
+        padding-right: 34px;
+    }
+
+    #overlay-sidebar {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 1000;
+        opacity: 1;
+        transition: opacity 0.3s ease;
+    }
+
+    body.sidebar-closed #overlay-sidebar {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .btn-menu-mobile {
+        display: none;
+        position: fixed;
+        top: calc(14px + env(safe-area-inset-top, 0px));
+        left: calc(14px + env(safe-area-inset-left, 0px));
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #1e1b4b;
+        color: white;
+        border: none;
+        font-size: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+    }
+
+    body.sidebar-closed .btn-menu-mobile {
+        display: flex;
+    }
+
+    #map-container {
+        width: 100%;
+    }
+
+    .btn-container button {
+        flex: 1;
+    }
+}
+
+/* =====================================================
+   AJUSTES FINOS - CELULARES PEQUENOS (<= 480px)
+   Reduz paddings, fontes e espaçamentos para caber
+   confortavelmente sem cortes nem scroll horizontal.
+   ===================================================== */
+@media (max-width: 480px) {
+
+    #sidebar {
+        width: 86%;
+        padding: 16px;
+        padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    }
+
+    #sidebar .header h2 {
+        font-size: 20px;
+    }
+
+    #sidebar .header p {
+        font-size: 13px;
+    }
+
+    .btn-container button {
+        font-size: 13px;
+        padding: 9px 6px;
+    }
+
+    #resumo-rota {
+        padding: 12px !important;
+    }
+}
+
+/* =====================================================
+   RESPONSIVIDADE - MODAL DE HISTÓRICO (<= 700px)
+   Reduz o respiro do modal e transforma a tabela em
+   "cards" verticais, mais fáceis de ler no celular.
+   ===================================================== */
+@media (max-width: 700px) {
+
+    .modal-content {
+        width: 94%;
+        padding: 20px 14px;
+        max-height: 88%;
+    }
+
+    .modal-content h2 {
+        font-size: 18px;
+        padding-right: 28px;
+    }
+
+    .close-btn {
+        top: 10px;
+        right: 12px;
+        font-size: 24px;
+    }
+
+    .btn-modal {
+        font-size: 13px;
+        padding: 9px 12px;
+    }
+
+    .modal-table thead {
+        display: none;
+    }
+
+    .modal-table,
+    .modal-table tbody,
+    .modal-table tr,
+    .modal-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .modal-table tr {
+        margin-bottom: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 4px 10px;
+    }
+
+    .modal-table tr:hover {
+        background-color: transparent;
+    }
+
+    .modal-table td {
+        border: none;
+        padding: 6px 0;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        text-align: right;
+    }
+
+    .modal-table td:not([colspan])::before {
+        font-weight: bold;
+        color: #2c3e50;
+        text-align: left;
+        flex-shrink: 0;
+    }
+
+    .modal-table td:not([colspan]):nth-of-type(1)::before { content: "Data/Hora"; }
+    .modal-table td:not([colspan]):nth-of-type(2)::before { content: "Origem"; }
+    .modal-table td:not([colspan]):nth-of-type(3)::before { content: "Paradas"; }
+    .modal-table td:not([colspan]):nth-of-type(4)::before { content: "Distância"; }
+    .modal-table td:not([colspan]):nth-of-type(5)::before { content: "Tempo"; }
 }

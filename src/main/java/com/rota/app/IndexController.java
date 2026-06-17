@@ -11,10 +11,10 @@ public class IndexController {
         return "login"; // aponta para login.html
     }
 
-    @GetMapping("/mapa")
+    /*@GetMapping("/mapa")
     public String telaMapa() {
         return "mapa"; // aponta para mapa.html
-    }
+    }*/
 
     /*@GetMapping("/")
     public String raiz() {
