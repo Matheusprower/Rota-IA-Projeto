@@ -19,5 +19,12 @@
             <a th:href="@{/login}" style="color: #3498db; text-decoration: none;">Já tenho conta</a>
         </p>
     </div>
+    <script>
+        function setAppHeight() {
+            document.documentElement.style.setProperty('--app-h', `${window.innerHeight}px`);
+        }
+        window.addEventListener('resize', setAppHeight);
+        setAppHeight();
+    </script>
 </body>
 </html>

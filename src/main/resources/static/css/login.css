@@ -2,13 +2,21 @@
     box-sizing: border-box;
 }
 
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #041f77 0%, #1e1b4b 100%);
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    min-height: var(--app-h, 100vh);
+    width: 100%;
     margin: 0;
     padding: 16px;
 }

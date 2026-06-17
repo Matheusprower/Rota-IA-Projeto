@@ -4,15 +4,17 @@
 
 body,
 html {
-    height: 100%;
+    height: var(--app-h, 100vh);
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     overflow: hidden;
+    width: 100%;
 }
 
 #main-container {
     display: flex;
-    height: 100%;
+    height: var(--app-h, 100vh);
+    width: 100%;
 }
 
 #sidebar {
@@ -82,6 +84,9 @@ button {
 
 #map-container {
     background-color: #e9e9e9;
+    flex: 1;
+    min-width: 0;
+    height: var(--app-h, 100vh);
 }
 
 /* ESTILO MODAL DO HISTÓRICO */
@@ -183,7 +188,7 @@ button {
         position: fixed;
         top: 0;
         left: 0;
-        height: 100%;
+        height: var(--app-h, 100vh);
         width: 82%;
         max-width: 320px;
         padding-top: calc(20px + env(safe-area-inset-top, 0px));
@@ -201,7 +206,6 @@ button {
         display: block;
         position: absolute;
         top: calc(14px + env(safe-area-inset-top, 0px));
-        right: 14px;
         background: none;
         border: none;
         color: #ffffff;
@@ -255,6 +259,7 @@ button {
 
     #map-container {
         width: 100%;
+        height: var(--app-h, 100vh);
     }
 
     .btn-container button {

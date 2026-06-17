@@ -19,5 +19,12 @@
             <a th:href="@{/cadastro}" style="color: #3498db; text-decoration: none;">Criar conta</a>
         </form>
     </div>
+    <script>
+        function setAppHeight() {
+            document.documentElement.style.setProperty('--app-h', `${window.innerHeight}px`);
+        }
+        window.addEventListener('resize', setAppHeight);
+        setAppHeight();
+    </script>
 </body>
 </html>
