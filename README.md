@@ -27,7 +27,9 @@
 - [Pré-requisitos](#-pré-requisitos)
 - [Instalação e Execução](#-instalação-e-execução)
 - [Execução com Docker](#-execução-com-docker)
+- [Deploy em Produção](#-deploy-em-produção)
 - [Testes Automatizados](#-testes-automatizados)
+- [Documentação de Testes](#-documentação-de-testes)
 - [Segurança](#-segurança)
 - [Capturas de Tela](#-capturas-de-tela)
 - [Equipe de Desenvolvimento](#-equipe-de-desenvolvimento)
@@ -53,7 +55,10 @@ Em cenários logísticos reais, a ordem de visitação dos pontos impacta direta
 |---|---|
 | **Autenticação Segura** | Login e cadastro com senhas criptografadas via BCrypt |
 | **Otimização de Trajetos** | Integração com Google Maps Directions API para cálculo da rota mais eficiente entre múltiplos pontos |
+| **Comparativo de Economia** | Tooltip inteligente que exibe estimativa de ~30% de economia em distância e tempo comparado a rotas não otimizadas |
 | **Dashboard SPA** | Interface Single Page Application — o mapa e os dados não são perdidos durante a navegação |
+| **Saudação Personalizada** | Exibição do nome real do usuário logado na sidebar, com botão de logout integrado |
+| **Layout Responsivo** | Interface adaptada para desktop, tablets e celulares com sidebar deslizante e menu hamburger |
 | **Histórico Inteligente** | Salvamento automático de rotas otimizadas no banco de dados, vinculadas ao usuário logado |
 | **Exportação de Dados** | Download do histórico de rotas em formato `.json` |
 | **Importação de Dados** | Upload de histórico de rotas a partir de arquivo `.json` de outra máquina |
@@ -98,12 +103,13 @@ A aplicação segue o padrão arquitetural **MVC (Model-View-Controller)** com S
 ### Fluxo Principal
 
 1. O usuário se autentica via formulário de login (Spring Security)
-2. Após login, é redirecionado à tela do mapa (`/mapa`)
+2. Após login, é redirecionado à tela do mapa (`/mapa`) com saudação personalizada ("Olá, [nome]")
 3. Insere endereços (origem + N paradas) nos campos dinâmicos
 4. Clica em "Otimizar" → JavaScript envia requisição ao Google Directions API
 5. O mapa renderiza a rota otimizada e exibe resumo (distância + tempo)
-6. A rota é salva automaticamente via `POST /api/rotas/salvar` (backend)
-7. O histórico pode ser consultado, exportado ou importado a qualquer momento
+6. Tooltip exibe comparativo de economia (~30% vs. rota sem otimização)
+7. A rota é salva automaticamente via `POST /api/rotas/salvar` (backend)
+8. O histórico pode ser consultado, exportado ou importado a qualquer momento
 
 ---
 
@@ -156,7 +162,7 @@ Rota-IA-Projeto/
 │
 ├── src/main/java/com/rota/app/
 │   ├── AppApplication.java             # Classe principal (Spring Boot)
-│   ├── IndexController.java            # Controller raiz
+│   ├── IndexController.java            # Controller de login (/login)
 │   │
 │   ├── config/
 │   │   ├── SecurityConfig.java         # Configuração Spring Security
@@ -166,7 +172,7 @@ Rota-IA-Projeto/
 │   │   ├── ApiController.java          # Endpoints REST (/teste, /otimizar)
 │   │   ├── CadastroController.java     # Registro de novos usuários
 │   │   ├── HistoricoController.java    # CRUD de rotas + Export/Import
-│   │   └── TelaController.java         # Redirecionamento de telas
+│   │   └── TelaController.java         # Telas (/, /mapa) + saudação personalizada
 │   │
 │   ├── model/
 │   │   ├── Rota.java                   # Entidade JPA — Rota otimizada
@@ -185,16 +191,27 @@ Rota-IA-Projeto/
 │   ├── application.properties          # Configurações (datasource, JPA)
 │   ├── static/
 │   │   ├── css/
-│   │   │   ├── login.css               # Estilos da tela de login
-│   │   │   └── mapa.css                # Estilos da tela do mapa
+│   │   │   ├── login.css               # Estilos da tela de login (responsivo)
+│   │   │   └── mapa.css                # Estilos do mapa + sidebar mobile
 │   │   ├── js/
 │   │   │   └── script.js               # Scripts auxiliares
 │   │   └── index.css                   # Estilos gerais
 │   └── templates/
-│       ├── login.html                  # Tela de login
-│       ├── cadastro.html               # Tela de cadastro
+│       ├── login.html                  # Tela de login (viewport mobile)
+│       ├── cadastro.html               # Tela de cadastro (viewport mobile)
 │       ├── index.html                  # Página inicial
-│       └── mapa.html                   # Dashboard principal (mapa + histórico)
+│       └── mapa.html                   # Dashboard principal (mapa + histórico + SPA)
+│
+├── src/docs/testes/                    # 📝 Documentação de testes
+│   ├── plano-de-teste.md              # Plano de teste completo
+│   ├── roteiros-de-teste.md           # 5 roteiros de teste (RT-01 a RT-05)
+│   ├── usabilidade.md                 # Teste de usabilidade (3 participantes)
+│   └── evidencias/                    # Screenshots das execuções
+│       ├── print-rt01.png             # Evidência RT-01
+│       ├── print-rt02.png             # Evidência RT-02
+│       ├── print-rt03.png             # Evidência RT-03
+│       ├── print-rt04.png             # Evidência RT-04
+│       └── print-rt05.png             # Evidência RT-05
 │
 ├── src/test/java/com/rota/app/
 │   ├── bdd/
@@ -260,7 +277,7 @@ Usuario (1) ────────── (*) Rota
 | `GET` | `/login` | Tela de autenticação |
 | `GET` | `/cadastro` | Tela de registro de novo usuário |
 | `POST` | `/cadastro` | Processa registro → redireciona a `/login?success` |
-| `GET` | `/mapa` | Dashboard principal (requer autenticação) |
+| `GET` | `/mapa` | Dashboard principal com saudação personalizada (requer autenticação) |
 
 ### API REST
 
@@ -323,6 +340,8 @@ http://localhost:8080
 
 Você será redirecionado à tela de login. Crie uma conta na tela de cadastro e faça login para acessar o dashboard do mapa.
 
+> 💡 A interface é totalmente responsiva — funciona em desktop, tablets e celulares. Em telas menores, a sidebar se transforma em um painel deslizante acessível via botão hamburger (☰).
+
 ---
 
 ## 🐳 Execução com Docker
@@ -359,6 +378,24 @@ docker-compose up --build -d
 | `MYSQL_DATABASE` | `db_mydatabase` | Nome do banco |
 | `MYSQL_ROOT_PASSWORD` | `root` | Senha root do MySQL |
 | `SPRING_DATASOURCE_URL` | `jdbc:mysql://mysql:3306/db_mydatabase...` | URL JDBC |
+
+---
+
+## 🌐 Deploy em Produção
+
+O sistema possui uma instância de produção acessível publicamente:
+
+```
+http://rota-ia.freeddns.org:8080
+```
+
+| Item | Detalhe |
+|---|---|
+| **URL de Cadastro** | http://rota-ia.freeddns.org:8080/cadastro |
+| **URL de Login** | http://rota-ia.freeddns.org:8080/login |
+| **Protocolo** | HTTP (porta 8080) |
+
+> Para acessar, crie uma conta na tela de cadastro e realize o login.
 
 ---
 
@@ -399,6 +436,72 @@ Os testes utilizam **H2 Database** em memória, configurado em `src/test/resourc
 
 ---
 
+## 📝 Documentação de Testes
+
+O projeto possui documentação de testes completa na pasta `src/docs/testes/`:
+
+### Plano de Teste (`plano-de-teste.md`)
+
+Documento formal contendo:
+- Identificação e contexto do projeto
+- Objetivos e metas de cobertura
+- Escopo (funcionalidades, regras, integrações)
+- Ambiente e ferramentas utilizadas
+- Estratégia de testes (unitário, sistema, BDD, usabilidade)
+- Rastreabilidade de requisitos (RF-01 a RF-06)
+- Casos de teste planejados (BDD-01 a BDD-05, RT-01)
+
+### Roteiros de Teste (`roteiros-de-teste.md`)
+
+5 roteiros de teste manuais executados e aprovados:
+
+| ID | Título | Prioridade | Status |
+|---|---|---|---|
+| RT-01 | Otimização de rota | Alta | 🟢 Executado |
+| RT-02 | Salvamento e visualização do histórico | Alta | 🟢 Executado |
+| RT-03 | Validação de campos obrigatórios | Média | 🟢 Executado |
+| RT-04 | Tratamento de endereço inválido | Média | 🟢 Executado |
+| RT-05 | Teste de limite de pontos na rota | Baixa | 🟢 Executado |
+
+### Teste de Usabilidade (`usabilidade.md`)
+
+Teste presencial realizado com 3 participantes de diferentes perfis:
+
+| Participante | Perfil | Nível | Resultado Geral |
+|---|---|---|---|
+| Douglas | Desenvolvedor | Avançado | ✅ Todas as tarefas concluídas sem ajuda |
+| Raiane | Usuária comum | Médio | ⚠️ Concluiu com pequenas dificuldades |
+| Sueli | Sem experiência técnica | Leigo | ⚠️ Precisou orientação em algumas tarefas |
+
+**Conclusão:** Go — Sistema funcional, com melhorias de usabilidade recomendadas.
+
+### Evidências (`evidencias/`)
+
+Screenshots das execuções dos roteiros de teste: `print-rt01.png` a `print-rt05.png`.
+
+---
+
+## 📱 Responsividade
+
+A aplicação foi atualizada com layout totalmente responsivo, adaptado para três categorias de dispositivos:
+
+| Breakpoint | Dispositivo | Comportamento |
+|---|---|---|
+| `> 880px` | Desktop | Sidebar fixa à esquerda, mapa ao lado |
+| `≤ 880px` | Tablets | Sidebar deslizante (overlay), botão hamburger (☰), mapa tela cheia |
+| `≤ 480px` | Celulares | Sidebar 86%, fontes e paddings reduzidos |
+| `≤ 700px` | Modal (histórico) | Tabela convertida em cards verticais |
+
+### Recursos Mobile
+
+- **Sidebar deslizante:** Painel lateral abre/fecha com animação suave (`transform: translateX`)
+- **Botão hamburger:** Aparece automaticamente quando a sidebar está fechada em mobile
+- **Overlay escuro:** Fundo semitransparente ao abrir a sidebar, fecha ao clicar fora
+- **Safe-area-inset:** Compatibilidade com notch de iPhones via `env(safe-area-inset-*)`
+- **Histórico em cards:** Em telas pequenas, a tabela de histórico se transforma em cards empilhados
+
+---
+
 ## 🔐 Segurança
 
 A aplicação utiliza **Spring Security 6** com as seguintes configurações:
@@ -407,7 +510,8 @@ A aplicação utiliza **Spring Security 6** com as seguintes configurações:
 - **Autenticação:** Baseada em formulário com `CustomUserDetailsService` (consulta ao banco)
 - **Rotas públicas:** `/login`, `/cadastro`, `/css/**`, `/js/**`, `/images/**`
 - **Rotas protegidas:** Todas as demais requerem autenticação
-- **Pós-login:** Redirecionamento automático para `/mapa`
+- **Pós-login:** Redirecionamento automático para `/mapa` com saudação personalizada
+- **Logout:** Botão integrado na sidebar com redirecionamento ao login
 - **CSRF:** Desabilitado (API REST)
 
 ---
