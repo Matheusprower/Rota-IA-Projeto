@@ -50,9 +50,9 @@
 | 🧑‍💻 IDE | Visual Studio Code |
 | 🧱 Build | Maven + Spring Boot |
 | ✅ Framework de testes unitários | JUnit |
-| 🥒 BDD | Não utilizado |
-| 🤖 CI | Não utilizado |
-| 🗄️ Banco/Dados | Banco de dados executado via Docker para armazenamento de usuários, autenticação e histórico de rotas |
+| 🥒 BDD (se houver) | Cucumber 7.15.0 utilizando Gherkin |
+| 🤖 CI (se houver) | Não utilizado |
+| 🗄️ Banco/Dados | Banco principal da aplicação via Docker + Banco H2 para testes automatizados |
 
 
 ---
@@ -62,36 +62,38 @@
 
 | Tipo de teste | 🎯 Objetivo | 📌 Escopo | 🛠️ Ferramenta | 👤 Responsável | 📎 Saída/Evidência |
 |---|---|---|---|---|---|
-| ✅ Unitário | Validar regras isoladas do sistema | Serviços, validações e cálculos | JUnit | Equipe | Logs dos testes |
-| 🌐 Sistema/E2E | Validar fluxo completo do usuário | Login, rota e histórico | Navegador | Equipe | Prints da aplicação |
-| 🥒 BDD | Não utilizado | - | - | - | - |
-| 🧑‍💻 Usabilidade | Validar interface e experiência | Tela do sistema | Teste manual | Equipe | Evidências visuais |
-
+| ✅ Unitário | Validar componentes isolados e regras do sistema | Serviços e validações | JUnit | Equipe | Relatório dos testes |
+| 🌐 Sistema/End-to-End | Validar fluxo completo da aplicação | Login, rotas e histórico | Navegador | Equipe | Prints da aplicação |
+| 🥒 BDD | Validar comportamento do sistema através de cenários de usuário | Cadastro, otimização e histórico | Cucumber + Gherkin | Equipe | Relatório Cucumber |
+| 🧑‍💻 Usabilidade | Avaliar facilidade de uso da interface | Telas do sistema | Teste manual | Equipe | Evidências visuais |
 
 ---
 
 
 # 🧷🧭 Rastreabilidade
 
-| ID Req | Requisito/Funcionalidade | Prioridade | Fonte | Testes | Status |
+| ID Req | Requisito/Funcionalidade | Prioridade | Fonte | IDs de testes | Status |
 |---|---|---|---|---|---|
-| RF-01 | Cadastro/login do usuário | Alta | Código | RT-01 | Executado |
-| RF-02 | Criar e otimizar rotas | Alta | Código/API | RT-02 | Executado |
-| RF-03 | Salvar histórico de rotas no banco | Alta | Banco/Docker | RT-03 | Executado |
-| RF-04 | Validar campos obrigatórios | Média | Código | RT-04 | Executado |
-| RF-05 | Tratar endereços inválidos | Média | Google Maps API | RT-05 | Executado |
+| RF-01 | Otimizar lista de endereços | Alta | Código/API | BDD-01 / RT-01 | 🟢 Executado |
+| RF-02 | Cadastro de usuário | Alta | UsuárioRepository | BDD-02 | 🟢 Executado |
+| RF-03 | Consultar histórico de rotas | Alta | RotaRepository | BDD-03 / RT-02 | 🟢 Executado |
+| RF-04 | Salvar rota vinculada ao usuário | Alta | Banco de dados | BDD-04 | 🟢 Executado |
+| RF-05 | Ordenar histórico por data | Média | Banco de dados | BDD-05 | 🟢 Executado |
+| RF-06 | Validar entradas inválidas | Média | Código | RT-03 / RT-04 | 🟢 Executado |
 
 ---
 
 
 # 🧾🧪 Casos de teste planejados
 
-| ID | Tipo | Título | Pré-condição | Entrada | Resultado esperado | Prioridade | Automatizado |
+| ID | Tipo | Título | Pré-condição | Entrada | Resultado esperado | Prioridade | Automatizado? |
 |---|---|---|---|---|---|---|---|
-| UT-01 | Unitário | Validar cálculo da rota | Sistema iniciado | Endereços válidos | Retornar rota correta | Alta | Sim |
-| RT-01 | Manual | Otimização de rota | Mapa carregado | Origem + pontos + destino | Mostrar rota otimizada | Alta | Não |
-| RT-02 | Manual | Histórico de rotas | Rota criada | Dados da rota | Salvar e exibir histórico | Alta | Não |
-| RT-03 | Manual | Campos obrigatórios | Tela inicial | Dados incompletos | Bloquear operação | Média | Não |
+| BDD-01 | 🥒 BDD | Otimizar rota com endereços válidos | Sistema iniciado | 3 endereços | Retornar sucesso na otimização | Alta | Sim |
+| BDD-02 | 🥒 BDD | Cadastrar usuário | Aplicação conectada ao banco | Nome e senha | Usuário recebe ID | Alta | Sim |
+| BDD-03 | 🥒 BDD | Buscar histórico inexistente | Usuário não cadastrado | Username inválido | Retornar lista vazia | Média | Sim |
+| BDD-04 | 🥒 BDD | Salvar rota do usuário | Usuário existente | Origem + parada | Histórico atualizado | Alta | Sim |
+| BDD-05 | 🥒 BDD | Ordenar histórico | Usuário possui rotas | Rotas com datas diferentes | Mostrar mais recente primeiro | Média | Sim |
+| RT-01 | 📝 Manual | Otimização visual da rota | Mapa carregado | Endereços válidos | Rota aparece no mapa | Alta | Não |
 
 
 ---
@@ -101,6 +103,6 @@
 
 | ID | 🧺 Conjunto | 📝 Descrição | 🧪 Como criar | 📍 Onde armazenar | 💡 Observações |
 |---|---|---|---|---|---|
-| DT-01 | Usuário válido | Conta cadastrada para acesso ao sistema | Criar usuário pelo cadastro | Banco Docker | Usado nos testes de login |
-| DT-02 | Rotas válidas | Origem, paradas e destino existentes | Inserir rota pelo sistema | Banco Docker | Usado nos testes de histórico |
-| DT-03 | Dados inválidos | Endereço inexistente ou campos vazios | Inserção manual | Aplicação | Usado nos testes de validação |
+| DT-01 | Usuário teste | Usuário para cenários BDD | Criado pelo Cucumber | Banco H2 | Usado nos testes automatizados |
+| DT-02 | Rotas teste | Rotas vinculadas ao usuário | Criadas pelos Steps | Banco H2 | Usado no histórico |
+| DT-03 | Endereços | Lista de locais para otimização | Inseridos no cenário Gherkin | Teste automatizado | Usado no cálculo de rota |
