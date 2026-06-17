@@ -128,6 +128,11 @@
             document.body.classList.toggle("sidebar-closed");
         }
 
+        // Em mobile, inicia com a sidebar fechada para o mapa ficar visível
+        if (window.innerWidth <= 880) {
+            document.body.classList.add("sidebar-closed");
+        }
+
         function initMap() {
             directionsService = new google.maps.DirectionsService();
             directionsRenderer = new google.maps.DirectionsRenderer();
@@ -294,8 +299,8 @@
                     const dadosParaSalvar = {
                         origem: origem,
                         paradas: paradas.join(" ➔ "),
-                        distanciaTotal: km,
-                        tempoTotal: min
+                        distanciaTotal: kmReal + " km",
+                        tempoTotal: minReal + " min"
                     };
 
                     fetch('/api/rotas/salvar', {
