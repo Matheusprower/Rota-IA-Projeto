@@ -17,8 +17,8 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests((requests) -> requests
-                // IMPORTANTE: Liberamos "/cadastro" para novos usuários poderem acessar a tela
-                .requestMatchers("/css/**", "/images/**", "/js/**", "/cadastro").permitAll()
+                // IMPORTANTE: Liberamos "/cadastro" e recursos estáticos para novos usuários
+                .requestMatchers("/css/**", "/images/**", "/js/**", "/cadastro", "/logo-rotaia.png").permitAll()
                 // Qualquer outra requisição precisa de autenticação
                 .anyRequest().authenticated()
             )

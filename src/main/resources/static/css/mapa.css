@@ -35,6 +35,15 @@ h2 {
     margin-top: 0;
 }
 
+.logo-mapa {
+    max-width: 220px;
+    height: auto;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #3498db;
+    display: block;
+}
+
 .form-group {
     margin-bottom: 15px;
 }

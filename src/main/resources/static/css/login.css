@@ -31,6 +31,14 @@ body {
     text-align: center;
 }
 
+.logo-login {
+    max-width: 150px;
+    margin-bottom: 1rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 h2 {
     color: #2c3e50;
     margin-top: 0;
